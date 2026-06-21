@@ -329,29 +329,273 @@ window.MathJax = {
     border-color: #6366f1; color: #c7d2fe;
 }
 
-/* ── PDF page controls (vertical pill, right side) ── */
-#pdf-controls {
+/* ══ Lesson panel — right-side floating drawer ══ */
+#lesson-panel {
     position: fixed;
-    right: 10px; top: 50%;
-    transform: translateY(-50%);
-    z-index: 820;
-    display: flex;
+    right: 0; top: 0; bottom: 0;
+    width: 288px;
+    z-index: 800;
+    background: rgba(8,12,28,.96);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border-left: 1px solid rgba(255,255,255,.08);
+    display: none;
     flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    background: rgba(15,23,42,.85);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 16px;
-    padding: 8px 6px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.45);
-    min-height: 220px;
+    box-shadow: -6px 0 40px rgba(0,0,0,.5);
+    transform: translateX(100%);
+    transition: transform .28s cubic-bezier(.4,0,.2,1);
 }
-#pdf-info {
-    font-size: 10px; font-weight: 700; letter-spacing: .4px;
-    color: #94a3b8; white-space: nowrap; text-align: center;
-    writing-mode: horizontal-tb;
+#lesson-panel.open {
+    display: flex;
+    transform: translateX(0);
 }
+
+/* Header bar */
+#lesson-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 12px 9px;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    flex-shrink: 0;
+}
+#lesson-title-label {
+    font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+    color: #10b981; text-transform: uppercase; flex: 1;
+}
+#lesson-sec-nav {
+    display: flex; align-items: center; gap: 2px;
+}
+#lesson-sec-counter {
+    font-size: 10px; font-weight: 700; color: #475569;
+    min-width: 34px; text-align: center;
+}
+.ls-nav-btn {
+    background: none; border: none; cursor: pointer;
+    color: #475569; font-size: 11px;
+    width: 22px; height: 22px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .12s, color .12s; flex-shrink: 0;
+}
+.ls-nav-btn:hover:not(:disabled) { background: rgba(16,185,129,.2); color: #34d399; }
+.ls-nav-btn:disabled { opacity: .22; cursor: not-allowed; }
+#lesson-close-btn {
+    background: none; border: none; cursor: pointer;
+    color: #334155; font-size: 12px;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .12s, color .12s; margin-left: 2px;
+}
+#lesson-close-btn:hover { color: #f87171; background: rgba(248,113,113,.18); }
+
+/* Section content area */
+#lesson-body {
+    flex: 1; overflow-y: auto; padding: 10px 14px 20px;
+    scrollbar-width: thin; scrollbar-color: rgba(16,185,129,.2) transparent;
+}
+#lesson-body::-webkit-scrollbar { width: 4px; }
+#lesson-body::-webkit-scrollbar-thumb { background: rgba(16,185,129,.25); border-radius: 2px; }
+
+/* Section title (# heading) */
+.ls-h1 {
+    display: flex; align-items: flex-start; gap: 8px;
+    margin: 2px 0 10px; padding-bottom: 8px;
+    border-bottom: 1px solid rgba(16,185,129,.18);
+}
+.ls-h1-badge {
+    flex-shrink: 0; margin-top: 3px;
+    width: 4px; height: 18px;
+    background: linear-gradient(180deg, #6366f1, #10b981);
+    border-radius: 2px;
+}
+.ls-h1-text {
+    font-size: 14px; font-weight: 800; line-height: 1.35;
+    background: linear-gradient(90deg, #a5b4fc 10%, #34d399 90%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: .01em;
+}
+
+/* Sub-heading (## heading) */
+.ls-h2 {
+    display: flex; align-items: center; gap: 7px;
+    margin: 14px 0 5px;
+}
+.ls-h2-badge {
+    flex-shrink: 0;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px rgba(16,185,129,.55);
+}
+.ls-h2-text {
+    font-size: 12.5px; font-weight: 700;
+    color: #34d399; letter-spacing: .02em;
+}
+
+/* Sub-sub-heading (### heading) */
+.ls-h3 {
+    display: flex; align-items: center; gap: 6px;
+    margin: 10px 0 4px; padding-left: 4px;
+}
+.ls-h3-dash {
+    color: #6366f1; font-weight: 900; font-size: 13px; flex-shrink: 0;
+}
+.ls-h3-text {
+    font-size: 11.5px; font-weight: 600;
+    color: #a5b4fc;
+}
+
+/* Note box (> prefix) */
+.ls-note {
+    display: flex; gap: 8px; align-items: flex-start;
+    margin: 8px 0;
+    padding: 8px 10px;
+    background: rgba(245,158,11,.09);
+    border: 1px solid rgba(245,158,11,.22);
+    border-radius: 8px;
+}
+.ls-note-icon { flex-shrink: 0; font-size: 12px; margin-top: 1px; }
+.ls-note-text { font-size: 11px; color: #fde68a; line-height: 1.55; }
+
+/* Formula box (| prefix) */
+.ls-formula {
+    margin: 8px 0;
+    padding: 9px 12px;
+    background: rgba(99,102,241,.1);
+    border: 1px solid rgba(99,102,241,.28);
+    border-radius: 8px;
+    font-size: 12px; color: #c7d2fe;
+    text-align: center; line-height: 1.6;
+    font-family: 'Cambria Math', 'STIX Two Math', serif;
+}
+
+/* Body paragraph */
+.ls-body {
+    font-size: 11.5px; color: #94a3b8;
+    line-height: 1.65; margin: 4px 0;
+    padding-left: 4px;
+}
+.ls-body mjx-container { font-size: inherit !important; }
+
+/* Sidebar lesson trigger button */
+#btn-lesson-load {
+    background: linear-gradient(135deg, rgba(16,185,129,.18), rgba(99,102,241,.12));
+    border: 1px solid rgba(16,185,129,.3);
+    color: #34d399;
+}
+#btn-lesson-load:hover {
+    background: linear-gradient(135deg, rgba(16,185,129,.3), rgba(99,102,241,.22));
+    border-color: rgba(16,185,129,.5);
+}
+#btn-lesson-load.ll-active {
+    background: linear-gradient(135deg, rgba(16,185,129,.32), rgba(99,102,241,.25));
+    border-color: #10b981; color: #6ee7b7;
+}
+
+/* Lesson sheet input panel */
+#lesson-sheet-panel {
+    position: fixed;
+    left: 82px; bottom: 54px;
+    width: 340px;
+    background: rgba(10,14,28,.97);
+    border: 1px solid rgba(16,185,129,.3);
+    border-radius: 14px;
+    padding: 16px;
+    z-index: 810;
+    display: none;
+    box-shadow: 0 8px 40px rgba(0,0,0,.55);
+    backdrop-filter: blur(16px);
+}
+#lesson-sheet-panel.open { display: block; }
+#lesson-sheet-panel h4 {
+    font-size: 12px; font-weight: 700; letter-spacing: 1px;
+    color: #10b981; text-transform: uppercase; margin-bottom: 10px;
+}
+#lesson-sheet-input {
+    width: 100%; padding: 9px 11px;
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(255,255,255,.09);
+    border-radius: 9px; color: #f1f5f9;
+    font-size: 12px; font-family: monospace;
+    outline: none; margin-bottom: 8px;
+    transition: border-color .2s;
+}
+#lesson-sheet-input:focus { border-color: #10b981; }
+#lesson-sheet-input::placeholder { color: #334155; font-family: inherit; }
+#lesson-sheet-fetch-btn, #lesson-csv-load-btn {
+    width: 100%; padding: 9px;
+    background: linear-gradient(135deg,#10b981,#059669);
+    border: none; border-radius: 9px;
+    color: #fff; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: opacity .15s;
+}
+#lesson-sheet-fetch-btn:hover, #lesson-csv-load-btn:hover { opacity: .88; }
+#lesson-sheet-msg {
+    margin-top: 8px; font-size: 11px;
+    color: #64748b; text-align: center; min-height: 16px;
+}
+.l-tab {
+    flex: 1; padding: 6px 4px; font-size: 11px; font-weight: 600;
+    background: rgba(255,255,255,.05); border: 1.5px solid rgba(255,255,255,.08);
+    border-radius: 8px; color: #64748b; cursor: pointer; transition: all .15s;
+}
+.l-tab.active {
+    background: rgba(16,185,129,.2); border-color: rgba(16,185,129,.45);
+    color: #34d399;
+}
+#lesson-csv-paste:focus { border-color: #10b981; outline: none; }
+
+/* ── Prompt AI tab ── */
+#l-tab-prompt .lp-row2 {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;
+}
+#l-tab-prompt label {
+    display: block; font-size: 10px; font-weight: 600; letter-spacing: .04em;
+    color: #475569; text-transform: uppercase; margin-bottom: 4px;
+}
+#l-tab-prompt input, #l-tab-prompt select {
+    width: 100%; padding: 7px 9px;
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(255,255,255,.09);
+    border-radius: 8px; color: #f1f5f9;
+    font-size: 11.5px; font-family: inherit;
+    outline: none; transition: border-color .2s;
+}
+#l-tab-prompt input:focus, #l-tab-prompt select:focus { border-color: #10b981; }
+#l-tab-prompt input::placeholder { color: #334155; }
+#l-tab-prompt select option { background: #0f172a; }
+#lp-generate-btn {
+    width: 100%; padding: 8px;
+    background: linear-gradient(135deg,#10b981,#059669);
+    border: none; border-radius: 8px;
+    color: #fff; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: opacity .15s; margin-bottom: 8px;
+}
+#lp-generate-btn:hover { opacity: .88; }
+#lp-prompt-out {
+    width: 100%; height: 148px;
+    padding: 8px 10px;
+    background: rgba(0,0,0,.35);
+    border: 1.5px solid rgba(255,255,255,.08);
+    border-radius: 8px; color: #94a3b8;
+    font-size: 10px; font-family: monospace;
+    line-height: 1.55; resize: none; outline: none;
+}
+#lp-prompt-out:focus { border-color: rgba(16,185,129,.4); }
+#lp-copy-btn {
+    width: 100%; padding: 7px;
+    background: rgba(16,185,129,.12);
+    border: 1.5px solid rgba(16,185,129,.3);
+    border-radius: 8px; color: #34d399;
+    font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+}
+#lp-copy-btn:hover { background: rgba(16,185,129,.22); }
+#lp-copy-btn.copied { background: rgba(16,185,129,.25); color: #6ee7b7; border-color: #10b981; }
+.lp-hint {
+    font-size: 10px; color: #334155; line-height: 1.5;
+    margin-top: 7px; text-align: center;
+}
+
+/* Shared nav-btn style for board-page nav */
 .pdf-nav {
     background: none; border: none; cursor: pointer;
     color: #94a3b8; font-size: 13px;
@@ -361,14 +605,6 @@ window.MathJax = {
 }
 .pdf-nav:hover:not(:disabled) { background: rgba(99,102,241,.28); color: #c7d2fe; }
 .pdf-nav:disabled { opacity: .25; cursor: not-allowed; }
-#pdf-close-btn {
-    background: none; border: none; cursor: pointer;
-    color: #475569; font-size: 11px;
-    width: 22px; height: 22px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .12s, color .12s; margin-top: 2px;
-}
-#pdf-close-btn:hover { color: #f87171; background: rgba(248,113,113,.18); }
 
 /* ══ Board Page Navigator ══ */
 #page-nav {
@@ -1535,10 +1771,10 @@ canvas { touch-action: none; -ms-touch-action: none; }
         <i data-lucide="book-open"></i> Câu hỏi
     </button>
 
-    <button class="tb-full" id="btn-upload-pdf"
-            data-tip="Tải file PDF lên làm nền — vẽ đè lên trên"
-            style="margin-top:4px; color:#f97316; border-color:rgba(249,115,22,.3);">
-        <i data-lucide="file-text"></i> PDF
+    <button class="tb-full" id="btn-lesson-load"
+            data-tip="Tải bài học từ Google Sheet — hiện nội dung bên phải bảng"
+            style="margin-top:4px;">
+        <i data-lucide="book-open-text"></i> Bài học
     </button>
 
 </aside>
@@ -1794,26 +2030,103 @@ canvas { touch-action: none; -ms-touch-action: none; }
     <!-- 3D Model overlays container -->
     <div id="models3d-container" style="position:absolute;inset:0;z-index:15;pointer-events:none;"></div>
 
-    <!-- PDF background layer: canvas (PDF.js) + iframe (native fallback) -->
-    <canvas id="pdf-layer" style="position:absolute;inset:0;z-index:5;pointer-events:none;display:none;"></canvas>
-    <iframe id="pdf-iframe" style="position:absolute;inset:0;width:100%;height:100%;border:none;z-index:5;pointer-events:none;display:none;background:#fff;" allowfullscreen></iframe>
-
     <canvas id="tmp-canvas" style="position:absolute;inset:0;z-index:11;pointer-events:none;"></canvas>
 
     <!-- Main canvas -->
     <canvas id="main-canvas" style="position:absolute;inset:0;z-index:10;touch-action:none;cursor:crosshair;"></canvas>
 </div>
 
-<!-- ═══════  PDF PAGE CONTROLS (vertical, docked right)  ═══════ -->
-<div id="pdf-controls" style="display:none;">
-    <div id="pdf-info"></div>
-    <button class="pdf-nav" id="pdf-prev-btn" title="Trang trước">▲</button>
-    <input type="range" id="pdf-slider" min="1" max="1" value="1"
-           style="writing-mode:vertical-lr;direction:rtl;width:28px;flex:1;cursor:pointer;accent-color:#6366f1;">
-    <button class="pdf-nav" id="pdf-next-btn" title="Trang sau">▼</button>
-    <button id="pdf-close-btn" title="Ẩn PDF">✕</button>
+<!-- ═══════  LESSON PANEL (right-side drawer)  ═══════ -->
+<div id="lesson-panel">
+    <div id="lesson-header">
+        <span id="lesson-title-label">📖 Bài học</span>
+        <div id="lesson-sec-nav">
+            <button class="ls-nav-btn" id="lesson-prev-sec" title="Phần trước" disabled>◀</button>
+            <span id="lesson-sec-counter">—</span>
+            <button class="ls-nav-btn" id="lesson-next-sec" title="Phần sau" disabled>▶</button>
+        </div>
+        <button id="lesson-close-btn" title="Đóng bài học">✕</button>
+    </div>
+    <div id="lesson-body">
+        <div style="color:#334155;font-size:12px;text-align:center;margin-top:40px;line-height:2">
+            Chưa có bài học.<br>
+            <span style="font-size:10px">Nhấn <b style="color:#34d399">Bài học</b> trong thanh công cụ để tải.</span>
+        </div>
+    </div>
 </div>
-<input type="file" id="pdf-file-input" accept=".pdf" style="display:none;">
+
+<!-- ═══════  LESSON SHEET INPUT PANEL  ═══════ -->
+<div id="lesson-sheet-panel">
+    <h4>📚 Tải bài học từ Google Sheet</h4>
+
+    <div id="l-tab-bar" style="display:flex;gap:5px;margin-bottom:10px;">
+        <button class="l-tab active" data-ltab="url">🔗 URL</button>
+        <button class="l-tab"        data-ltab="csv">📄 CSV</button>
+        <button class="l-tab"        data-ltab="prompt" style="flex:1.2;color:#34d399;border-color:rgba(16,185,129,.3)">✦ Prompt AI</button>
+    </div>
+
+    <div id="l-tab-url">
+        <div style="font-size:10.5px;color:#64748b;line-height:1.55;margin-bottom:10px;padding:7px 9px;background:rgba(16,185,129,.07);border-radius:7px;border-left:2px solid #10b981">
+            💡 <b style="color:#34d399">Định dạng cột A:</b><br>
+            <code style="color:#94a3b8;font-size:10px"># Tiêu đề chương</code> → Đề mục lớn<br>
+            <code style="color:#94a3b8;font-size:10px">## Tiêu đề nhỏ</code> → Đề mục phụ<br>
+            <code style="color:#94a3b8;font-size:10px">### Điểm nhỏ</code> → Điểm nhỏ<br>
+            <code style="color:#94a3b8;font-size:10px">&gt; Ghi chú</code> → Hộp ghi chú<br>
+            <code style="color:#94a3b8;font-size:10px">| Công thức |</code> → Hộp công thức<br>
+            Dòng thường → Nội dung (hỗ trợ $LaTeX$)
+        </div>
+        <input id="lesson-sheet-input" type="text" placeholder="Dán link Google Sheet (publish CSV)…">
+        <button id="lesson-sheet-fetch-btn">⬇ Tải bài học</button>
+    </div>
+
+    <div id="l-tab-csv" style="display:none;">
+        <div style="font-size:10.5px;color:#64748b;line-height:1.55;margin-bottom:8px;padding:7px 9px;background:rgba(16,185,129,.07);border-radius:7px;border-left:2px solid #10b981">
+            💡 Mở Google Sheet → <b style="color:#94a3b8">File → Download → CSV</b>
+            → mở bằng Notepad → chọn tất cả → dán vào đây.
+        </div>
+        <textarea id="lesson-csv-paste" rows="6"
+            placeholder="Dán nội dung CSV bài học vào đây…"
+            style="width:100%;padding:8px 10px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.09);border-radius:9px;color:#f1f5f9;font-size:11px;font-family:monospace;resize:vertical;outline:none;margin-bottom:8px;"></textarea>
+        <button id="lesson-csv-load-btn">⬇ Tải từ CSV</button>
+    </div>
+
+    <!-- Tab: Prompt AI -->
+    <div id="l-tab-prompt" style="display:none;">
+        <div class="lp-row2">
+            <div>
+                <label>Môn học</label>
+                <input id="lp-subject" placeholder="Toán 10, Vật lý…" value="Toán 10">
+            </div>
+            <div>
+                <label>Số phần (#)</label>
+                <input id="lp-sections" type="number" value="3" min="1" max="10" style="text-align:center">
+            </div>
+        </div>
+        <div style="margin-bottom:8px;">
+            <label>Chủ đề / Bài học</label>
+            <input id="lp-topic" placeholder="Hàm số bậc hai, Lượng giác…">
+        </div>
+        <div class="lp-row2">
+            <div>
+                <label>Ngôn ngữ</label>
+                <select id="lp-lang">
+                    <option value="tiếng Việt">Tiếng Việt</option>
+                    <option value="English">English</option>
+                </select>
+            </div>
+            <div>
+                <label>Yêu cầu thêm</label>
+                <input id="lp-extra" placeholder="có bài tập…">
+            </div>
+        </div>
+        <button id="lp-generate-btn">✦ Tạo Prompt</button>
+        <textarea id="lp-prompt-out" readonly placeholder="Nhấn "Tạo Prompt" ở trên…"></textarea>
+        <button id="lp-copy-btn" style="margin-top:6px;">⧉ Copy Prompt</button>
+        <div class="lp-hint">Dán prompt vào Claude / ChatGPT → copy kết quả vào Google Sheet cột A</div>
+    </div>
+
+    <div id="lesson-sheet-msg"></div>
+</div>
 
 <!-- ═══════  BOARD PAGE NAVIGATOR  ═══════ -->
 <div id="page-nav">
@@ -4831,280 +5144,353 @@ window.addEventListener('keydown', e => {
 })();
 
 /* ─────────────────────────────────────────────
-   PDF UPLOAD — nền PDF kiểu Scrble Ink
-   Chế độ 1: PDF.js render vào canvas (chất lượng cao)
-   Chế độ 2: iframe native (luôn hoạt động, fallback)
+   LESSON SYSTEM — Bài học từ Google Sheet
+   Hiển thị nội dung bài giảng với đề mục màu sắc
+   Phân mục theo dấu #, ##, ###, >, |...|
 ───────────────────────────────────────────── */
-(function initPdfUpload() {
+(function initLessonSystem() {
 
-    /* ── DOM ── */
-    const board     = document.getElementById('board');
-    const pdfCanvas = document.getElementById('pdf-layer');
-    const pdfFrame  = document.getElementById('pdf-iframe');
-    const pdfCtx    = pdfCanvas.getContext('2d');
-    const fileInput = document.getElementById('pdf-file-input');
-    const controls  = document.getElementById('pdf-controls');
-    const slider    = document.getElementById('pdf-slider');
-    const pageInfo  = document.getElementById('pdf-info');
-    const btnPrev   = document.getElementById('pdf-prev-btn');
-    const btnNext   = document.getElementById('pdf-next-btn');
-    const btnClose  = document.getElementById('pdf-close-btn');
-    const toggleBtn = document.getElementById('btn-upload-pdf');
+    /* ══ DOM ══ */
+    const panel       = document.getElementById('lesson-panel');
+    const bodyEl      = document.getElementById('lesson-body');
+    const secCounter  = document.getElementById('lesson-sec-counter');
+    const btnPrevSec  = document.getElementById('lesson-prev-sec');
+    const btnNextSec  = document.getElementById('lesson-next-sec');
+    const btnClose    = document.getElementById('lesson-close-btn');
+    const sideBtn     = document.getElementById('btn-lesson-load');
+    const inputPanel  = document.getElementById('lesson-sheet-panel');
+    const sheetInput  = document.getElementById('lesson-sheet-input');
+    const fetchBtn    = document.getElementById('lesson-sheet-fetch-btn');
+    const csvPaste    = document.getElementById('lesson-csv-paste');
+    const csvLoadBtn  = document.getElementById('lesson-csv-load-btn');
+    const sheetMsg    = document.getElementById('lesson-sheet-msg');
 
-    /* ── Trạng thái ── */
-    let pdfDoc      = null;   // PDF.js document object
-    let blobUrl     = null;   // Object URL for iframe fallback
-    let currentPage = 1;
-    let totalPages  = 1;
-    let rendering   = false;
-    let mode        = 'none'; // 'pdfjs' | 'iframe' | 'none'
+    /* ══ Trạng thái ══ */
+    let rows     = [];   // mảng chuỗi từ Google Sheet
+    let sections = [];   // [{startIdx, title}] — mỗi phần bắt đầu bằng "# "
+    let curSec   = 0;    // phần đang hiển thị
 
-    /* ═══════════════════════════════════════
-       PHẦN 1: PDF.js ENGINE
-    ═══════════════════════════════════════ */
+    /* ════════════════════════════════════════
+       PHẦN 1: PHÂN TÍCH & RENDER NỘI DUNG
+    ════════════════════════════════════════ */
 
-    /** Tải PDF.js từ nhiều CDN, trả về true nếu thành công */
-    async function loadPdfJsLib() {
-        if (window.pdfjsLib) return true;
-        const cdns = [
-            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
-            'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',
-            'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js',
-        ];
-        for (const src of cdns) {
-            try {
-                await new Promise((ok, err) => {
-                    const s = document.createElement('script');
-                    s.src = src;
-                    s.onload = ok;
-                    s.onerror = err;
-                    document.head.appendChild(s);
-                });
-                if (window.pdfjsLib) return true;
-            } catch (_) {}
+    /**
+     * Chuyển 1 dòng CSV thành HTML với đề mục màu sắc chuyên nghiệp.
+     * Quy tắc prefix:
+     *   #  → h1 (gradient tím-xanh)   ## → h2 (teal)   ### → h3 (indigo)
+     *   >  → hộp ghi chú (amber)       | → hộp công thức (indigo)
+     *   thường → đoạn văn (hỗ trợ $LaTeX$)
+     */
+    function rowToHtml(raw) {
+        const s = raw.trim();
+        if (!s) return '';
+
+        if (s.startsWith('### ')) {
+            const txt = escHtml(s.slice(4).trim());
+            return `<div class="ls-h3"><span class="ls-h3-dash">›</span><span class="ls-h3-text">${txt}</span></div>`;
         }
-        return false;
+        if (s.startsWith('## ')) {
+            const txt = escHtml(s.slice(3).trim());
+            return `<div class="ls-h2"><span class="ls-h2-badge"></span><span class="ls-h2-text">${txt}</span></div>`;
+        }
+        if (s.startsWith('# ')) {
+            // h1 chỉ render 1 lần (đã hiện ở tiêu đề phần)
+            return '';
+        }
+        if (s.startsWith('> ')) {
+            const txt = escHtml(s.slice(2).trim());
+            return `<div class="ls-note"><span class="ls-note-icon">💡</span><span class="ls-note-text">${txt}</span></div>`;
+        }
+        if (s.startsWith('| ') && s.endsWith(' |')) {
+            const txt = s.slice(2, -2).trim();
+            return `<div class="ls-formula">${txt}</div>`;
+        }
+        // Đoạn thường
+        const txt = escHtml(s);
+        return `<div class="ls-body">${txt}</div>`;
     }
 
-    /** Cài worker cho PDF.js: fetch code về → blob URL (bypass CORS file://) */
-    async function setupWorker() {
-        const workerCdns = [
-            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
-            'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js',
-            'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js',
-        ];
-        for (const url of workerCdns) {
-            try {
-                const r = await fetch(url, { cache: 'force-cache' });
-                if (!r.ok) continue;
-                const code = await r.text();
-                const blob = new Blob([code], { type: 'application/javascript' });
-                pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
-                return true;
-            } catch (_) {}
+    function escHtml(t) {
+        return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    /** Xây dựng danh sách sections từ rows */
+    function buildSections() {
+        sections = [];
+        rows.forEach((r, i) => {
+            if (r.trim().startsWith('# ') || (sections.length === 0)) {
+                if (sections.length === 0 && !r.trim().startsWith('# ')) {
+                    sections.push({ startIdx: 0, title: 'Nội dung' });
+                } else if (r.trim().startsWith('# ')) {
+                    sections.push({ startIdx: i, title: r.trim().slice(2).trim() });
+                }
+            }
+        });
+        if (!sections.length) sections = [{ startIdx: 0, title: 'Nội dung' }];
+    }
+
+    /** Hiển thị phần secIdx */
+    async function showSection(idx) {
+        if (!sections.length) return;
+        idx = Math.max(0, Math.min(idx, sections.length - 1));
+        curSec = idx;
+
+        const sec     = sections[idx];
+        const nextSec = sections[idx + 1];
+        const endIdx  = nextSec ? nextSec.startIdx : rows.length;
+
+        // Tiêu đề phần
+        const titleHtml = `
+            <div class="ls-h1">
+                <div class="ls-h1-badge"></div>
+                <div class="ls-h1-text">${escHtml(sec.title)}</div>
+            </div>`;
+
+        // Nội dung các dòng trong phần (bỏ dòng đầu nếu là # heading)
+        let contentHtml = '';
+        for (let i = sec.startIdx; i < endIdx; i++) {
+            contentHtml += rowToHtml(rows[i]);
         }
-        // Cuối cùng thử URL trực tiếp
-        pdfjsLib.GlobalWorkerOptions.workerSrc = workerCdns[0];
+
+        bodyEl.innerHTML = titleHtml + contentHtml;
+
+        // Render MathJax nếu có
+        if (window.MathJax && MathJax.typesetPromise) {
+            try {
+                if (MathJax.typesetClear) MathJax.typesetClear([bodyEl]);
+                await MathJax.typesetPromise([bodyEl]);
+            } catch(_) {}
+        }
+
+        bodyEl.scrollTop = 0;
+        updateSecNav();
+    }
+
+    function updateSecNav() {
+        const total = sections.length;
+        secCounter.textContent = total > 1 ? `${curSec + 1} / ${total}` : '—';
+        btnPrevSec.disabled = curSec <= 0;
+        btnNextSec.disabled = curSec >= sections.length - 1;
+    }
+
+    /* ════════════════════════════════════════
+       PHẦN 2: TẢI DỮ LIỆU
+    ════════════════════════════════════════ */
+
+    function setMsg(text, color = '#64748b') {
+        sheetMsg.style.color = color;
+        sheetMsg.textContent = text;
+    }
+
+    function isValidCsv(text) {
+        if (!text || text.length < 3) return false;
+        const lo = text.toLowerCase().trim();
+        if (lo.startsWith('<!doctype') || lo.startsWith('<html') ||
+            lo.includes('accounts.google.com') || lo.includes('signin')) return false;
         return true;
     }
 
-    /** Render trang N lên canvas bằng PDF.js */
-    async function renderPdfJs(pageNum) {
-        if (!pdfDoc || rendering) return;
-        rendering = true;
-        try {
-            const page  = await pdfDoc.getPage(pageNum);
-            const bw    = board.clientWidth  || board.offsetWidth;
-            const bh    = board.clientHeight || board.offsetHeight;
-            const dpr   = Math.min(window.devicePixelRatio || 1, 2);
-
-            // Scale: ngang PDF = ngang bảng (như Scrble Ink)
-            const vp0   = page.getViewport({ scale: 1 });
-            const scale = bw / vp0.width;
-            const vp    = page.getViewport({ scale: scale * dpr });
-
-            pdfCanvas.width        = Math.round(bw * dpr);
-            pdfCanvas.height       = Math.round(bh * dpr);
-            pdfCanvas.style.width  = bw + 'px';
-            pdfCanvas.style.height = bh + 'px';
-
-            pdfCtx.setTransform(1, 0, 0, 1, 0, 0);
-            pdfCtx.fillStyle = '#ffffff';
-            pdfCtx.fillRect(0, 0, pdfCanvas.width, pdfCanvas.height);
-
-            await page.render({ canvasContext: pdfCtx, viewport: vp }).promise;
-            currentPage = pageNum;
-        } catch (err) {
-            throw err;
-        } finally {
-            rendering = false;
-        }
+    function parseCsvRows(csvText) {
+        const result = Papa.parse(csvText, { skipEmptyLines: true });
+        return result.data.map(r => (r[0] || '').trim()).filter(s => s.length > 0);
     }
 
-    /* ═══════════════════════════════════════
-       PHẦN 2: IFRAME NATIVE FALLBACK
-    ═══════════════════════════════════════ */
-
-    /** Hiển thị trang N qua iframe native (không cần PDF.js) */
-    function renderIframe(pageNum) {
-        currentPage = pageNum;
-        // Thử dùng Chrome PDF API (không reload)
-        try {
-            const api = pdfFrame.contentWindow &&
-                        pdfFrame.contentWindow.PDFViewerApplication;
-            if (api && api.initialized && typeof api.page !== 'undefined') {
-                api.page = pageNum;
-                return;
-            }
-        } catch (_) {}
-        // Fallback: set lại src với #page=N (Chrome hiểu)
-        pdfFrame.src = blobUrl + '#page=' + pageNum +
-                       '&toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width';
+    function loadFromCsvText(csvText) {
+        const parsed = parseCsvRows(csvText);
+        if (!parsed.length) { setMsg('⚠ Không tìm thấy nội dung!', '#f87171'); return false; }
+        rows = parsed;
+        buildSections();
+        curSec = 0;
+        setMsg(`✓ Đã tải ${rows.length} dòng — ${sections.length} phần`, '#34d399');
+        openPanel();
+        showSection(0);
+        showToast(`📖 Bài học: ${sections.length} phần, ${rows.length} dòng`);
+        return true;
     }
 
-    /* ═══════════════════════════════════════
-       PHẦN 3: ĐIỀU HƯỚNG CHUNG
-    ═══════════════════════════════════════ */
-
-    function updateUI() {
-        slider.value = currentPage;
-        pageInfo.innerHTML = totalPages > 1
-            ? '<b>' + currentPage + '</b><br>/<br>' + totalPages
-            : '<b>' + currentPage + '</b>';
-        btnPrev.disabled = currentPage <= 1;
-        btnNext.disabled = currentPage >= totalPages;
+    async function fetchWithProxy(rawUrl) {
+        const proxies = [
+            u => u,
+            u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+            u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+            u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+            u => `https://thingproxy.freeboard.io/fetch/${u}`,
+            u => `https://cors-anywhere.herokuapp.com/${u}`,
+            u => `https://yacdn.org/proxy/${u}`,
+        ];
+        for (const p of proxies) {
+            try {
+                const r = await fetch(p(rawUrl), { cache: 'no-cache' });
+                if (!r.ok) continue;
+                const text = await r.text();
+                if (isValidCsv(text)) return text;
+            } catch (_) {}
+        }
+        return null;
     }
 
-    async function goTo(pageNum) {
-        pageNum = Math.max(1, Math.min(pageNum, totalPages));
-        if (pageNum === currentPage && mode !== 'none') { updateUI(); return; }
-        if (mode === 'pdfjs') {
-            await renderPdfJs(pageNum);
-        } else if (mode === 'iframe') {
-            renderIframe(pageNum);
+    function normalizeSheetUrl(raw) {
+        raw = raw.trim();
+        const m = raw.match(/\/spreadsheets\/d\/([^/]+)/);
+        if (m) {
+            const gidM = raw.match(/[?&#]gid=(\d+)/);
+            const gid  = gidM ? gidM[1] : '0';
+            return `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv&gid=${gid}`;
         }
-        currentPage = pageNum;
-        updateUI();
+        return raw;
     }
 
-    /* ═══════════════════════════════════════
-       PHẦN 4: UPLOAD FILE
-    ═══════════════════════════════════════ */
+    /* ════════════════════════════════════════
+       PHẦN 3: UI & EVENTS
+    ════════════════════════════════════════ */
 
-    toggleBtn.addEventListener('click', () => fileInput.click());
+    function openPanel() {
+        panel.classList.add('open');
+        sideBtn.classList.add('ll-active');
+        inputPanel.classList.remove('open');
+    }
 
-    fileInput.addEventListener('change', async e => {
-        const file = e.target.files[0];
-        fileInput.value = '';
-        if (!file) return;
+    function closeLesson() {
+        panel.classList.remove('open');
+        sideBtn.classList.remove('ll-active');
+    }
 
-        // Đóng bất kỳ PDF nào đang mở
-        closePdf(false);
-
-        // Tạo blob URL cho file (dùng ở cả 2 chế độ)
-        blobUrl = URL.createObjectURL(file);
-
-        showToast('⏳ Đang tải PDF…');
-
-        /* ─ Thử Chế độ 1: PDF.js ─ */
-        let pdfJsOk = false;
-        try {
-            const libOk = await loadPdfJsLib();
-            if (libOk) {
-                await setupWorker();
-                const ab = await file.arrayBuffer();
-                pdfDoc = await pdfjsLib.getDocument({
-                    data: new Uint8Array(ab),
-                    verbosity: 0,
-                }).promise;
-                totalPages = pdfDoc.numPages;
-
-                pdfCanvas.style.display = 'block';
-                pdfFrame.style.display  = 'none';
-                mode = 'pdfjs';
-
-                await renderPdfJs(1);
-                pdfJsOk = true;
-            }
-        } catch (err) {
-            console.warn('[PDF] PDF.js thất bại:', err.message, '→ chuyển sang iframe');
+    // Toggle input panel khi click nút sidebar
+    sideBtn.addEventListener('click', () => {
+        if (inputPanel.classList.contains('open')) {
+            inputPanel.classList.remove('open');
+        } else {
+            inputPanel.classList.add('open');
         }
-
-        /* ─ Fallback Chế độ 2: iframe native ─ */
-        if (!pdfJsOk) {
-            pdfDoc = null;
-            totalPages = 50;  // ước lượng; iframe tự biết khi hết trang
-            mode = 'iframe';
-
-            pdfCanvas.style.display = 'none';
-            pdfFrame.style.display  = 'block';
-            pdfFrame.src = blobUrl + '#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width';
-
-            // Thử lấy số trang thực từ Chrome PDF API sau khi iframe load
-            pdfFrame.onload = () => {
-                try {
-                    const api = pdfFrame.contentWindow?.PDFViewerApplication;
-                    if (api) {
-                        setTimeout(() => {
-                            const n = api.pagesCount || api.pdfDocument?.numPages;
-                            if (n && n > 0) {
-                                totalPages = n;
-                                slider.max = totalPages;
-                                updateUI();
-                            }
-                        }, 800);
-                    }
-                } catch (_) {}
-            };
-        }
-
-        currentPage = 1;
-        slider.min  = 1;
-        slider.max  = totalPages;
-        slider.value = 1;
-        controls.style.display = 'flex';
-        updateUI();
-
-        showToast(pdfJsOk
-            ? '✅ PDF ' + totalPages + ' trang — vẽ tự do lên bảng!'
-            : '✅ PDF đã tải. Dùng ▲▼ để chuyển trang');
     });
 
-    /* ═══════════════════════════════════════
-       PHẦN 5: ĐIỀU KHIỂN UI
-    ═══════════════════════════════════════ */
+    // Đóng input panel khi click ra ngoài
+    document.addEventListener('click', e => {
+        if (!inputPanel.contains(e.target) && e.target !== sideBtn) {
+            inputPanel.classList.remove('open');
+        }
+    }, true);
 
-    slider.addEventListener('input', () => goTo(parseInt(slider.value, 10)));
-    btnPrev.addEventListener('click', () => goTo(currentPage - 1));
-    btnNext.addEventListener('click', () => goTo(currentPage + 1));
+    btnClose.addEventListener('click', closeLesson);
+    btnPrevSec.addEventListener('click', () => showSection(curSec - 1));
+    btnNextSec.addEventListener('click', () => showSection(curSec + 1));
 
+    // Tab switcher
+    const _ltabs = { url: document.getElementById('l-tab-url'),
+                     csv: document.getElementById('l-tab-csv'),
+                     prompt: document.getElementById('l-tab-prompt') };
+    document.querySelectorAll('.l-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.l-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tab = btn.dataset.ltab;
+            Object.keys(_ltabs).forEach(k => _ltabs[k].style.display = k === tab ? '' : 'none');
+        });
+    });
+
+    /* ════════════════════════════════════════
+       PHẦN 4: PROMPT AI GENERATOR
+    ════════════════════════════════════════ */
+    const lpSubject    = document.getElementById('lp-subject');
+    const lpTopic      = document.getElementById('lp-topic');
+    const lpSections   = document.getElementById('lp-sections');
+    const lpLang       = document.getElementById('lp-lang');
+    const lpExtra      = document.getElementById('lp-extra');
+    const lpGenBtn     = document.getElementById('lp-generate-btn');
+    const lpOut        = document.getElementById('lp-prompt-out');
+    const lpCopyBtn    = document.getElementById('lp-copy-btn');
+
+    function buildLessonPrompt() {
+        const subject  = lpSubject.value.trim()  || 'Toán học';
+        const topic    = lpTopic.value.trim()    || 'Bài học';
+        const nsec     = parseInt(lpSections.value) || 3;
+        const lang     = lpLang.value;
+        const extra    = lpExtra.value.trim();
+        const extraLine = extra ? `\n- Yêu cầu thêm: ${extra}` : '';
+
+        return `Soạn bài học "${topic}" (${subject}) bằng ${lang}. Mỗi dòng = 1 ô Google Sheet (cột A). Chia thành ${nsec} phần chính.
+
+ĐỊNH DẠNG BẮT BUỘC (dùng đúng prefix, không thêm gì khác):
+# Tên phần  → đề mục lớn (bắt đầu phần mới)
+## Tên mục  → đề mục phụ
+### Ý nhỏ   → điểm con
+> Ghi chú   → hộp ghi chú quan trọng
+| $công thức$ | → hộp hiển thị công thức toán
+dòng thường  → nội dung, dùng $LaTeX$ cho ký hiệu toán
+
+QUY TẮC:
+- Mỗi phần (# ) có ít nhất 1 mục (## ), vài dòng nội dung, ≥1 công thức
+- Công thức toán: $f(x) = ax^2+bx+c$, hộp công thức: | $\\Delta = b^2-4ac$ |
+- KHÔNG dùng Markdown (**bold**, bullet -, số thứ tự) ngoài các prefix trên
+- Chỉ xuất nội dung bài học, không giải thích, không tiêu đề phụ ngoài format${extraLine}
+
+VÍ DỤ (không copy, chỉ tham khảo format):
+# Định nghĩa
+## Khái niệm cơ bản
+Parabol là đồ thị của hàm số $f(x) = ax^2+bx+c$ với $a \\neq 0$.
+| $f(x) = ax^2 + bx + c,\\; a \\neq 0$ |
+> Nếu $a > 0$ parabol mở lên, nếu $a < 0$ parabol mở xuống.
+### Đỉnh parabol
+Đỉnh có toạ độ $\\left(-\\dfrac{b}{2a};\\, -\\dfrac{\\Delta}{4a}\\right)$.
+
+---
+Bây giờ soạn bài "${topic}":`;
+    }
+
+    lpGenBtn.addEventListener('click', () => {
+        if (!lpTopic.value.trim()) { lpTopic.focus(); return; }
+        lpOut.value = buildLessonPrompt();
+        lpOut.select();
+    });
+
+    lpCopyBtn.addEventListener('click', () => {
+        const txt = lpOut.value;
+        if (!txt) { lpGenBtn.click(); return; }
+        navigator.clipboard.writeText(txt).then(() => {
+            lpCopyBtn.textContent = '✓ Đã copy!';
+            lpCopyBtn.classList.add('copied');
+            setTimeout(() => {
+                lpCopyBtn.textContent = '⧉ Copy Prompt';
+                lpCopyBtn.classList.remove('copied');
+            }, 2200);
+        }).catch(() => {
+            lpOut.select();
+            document.execCommand('copy');
+        });
+    });
+
+    // Auto-generate khi đổi topic
+    lpTopic.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); lpGenBtn.click(); }
+    });
+
+    // Fetch từ Google Sheet URL
+    fetchBtn.addEventListener('click', async () => {
+        const raw = sheetInput.value.trim();
+        if (!raw) { setMsg('⚠ Chưa nhập link', '#f87171'); return; }
+        fetchBtn.disabled = true;
+        setMsg('⏳ Đang tải bài học…');
+        const url  = normalizeSheetUrl(raw);
+        const text = await fetchWithProxy(url);
+        fetchBtn.disabled = false;
+        if (!text) { setMsg('❌ Không tải được. Hãy thử tab "Dán CSV".', '#f87171'); return; }
+        loadFromCsvText(text);
+    });
+
+    // Load từ CSV dán tay
+    csvLoadBtn.addEventListener('click', () => {
+        const text = csvPaste.value.trim();
+        if (!text) { setMsg('⚠ Chưa dán CSV', '#f87171'); return; }
+        loadFromCsvText(text);
+    });
+
+    // Phím tắt: Alt+← / Alt+→ chuyển phần
     window.addEventListener('keydown', e => {
-        if (mode === 'none') return;
-        if (document.activeElement.tagName === 'INPUT') return;
-        if (e.key === 'PageDown' || (e.altKey && e.key === 'ArrowDown')) {
-            e.preventDefault(); goTo(currentPage + 1);
-        }
-        if (e.key === 'PageUp'   || (e.altKey && e.key === 'ArrowUp')) {
-            e.preventDefault(); goTo(currentPage - 1);
-        }
-    });
-
-    function closePdf(notify = true) {
-        mode = 'none';
-        pdfCanvas.style.display = 'none';
-        pdfFrame.style.display  = 'none';
-        controls.style.display  = 'none';
-        pdfCtx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
-        pdfFrame.src = '';
-        if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = null; }
-        pdfDoc = null;
-        if (notify) showToast('📄 Đã đóng PDF — nét vẽ vẫn giữ nguyên');
-    }
-
-    btnClose.addEventListener('click', () => closePdf(true));
-
-    window.addEventListener('resize', () => {
-        if (mode === 'pdfjs') goTo(currentPage);
+        if (!panel.classList.contains('open')) return;
+        if (document.activeElement.tagName === 'INPUT' ||
+            document.activeElement.tagName === 'TEXTAREA') return;
+        if (e.altKey && e.key === 'ArrowLeft')  { e.preventDefault(); showSection(curSec - 1); }
+        if (e.altKey && e.key === 'ArrowRight') { e.preventDefault(); showSection(curSec + 1); }
     });
 
 })();
