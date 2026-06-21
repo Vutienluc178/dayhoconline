@@ -370,6 +370,65 @@ window.MathJax = {
 }
 #pdf-close-btn:hover { color: #f87171; background: rgba(248,113,113,.18); }
 
+/* ══ Board Page Navigator ══ */
+#page-nav {
+    position: fixed;
+    left: 82px; bottom: 16px;
+    z-index: 820;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: rgba(15,23,42,.88);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 14px;
+    padding: 7px 5px;
+    box-shadow: 0 3px 18px rgba(0,0,0,.45);
+    user-select: none;
+}
+#page-nav-label {
+    font-size: 8px; font-weight: 800; letter-spacing: 1.2px;
+    color: #334155; margin-bottom: 1px;
+    transition: opacity .18s;
+}
+#bp-info {
+    font-size: 11px; font-weight: 700; color: #94a3b8;
+    text-align: center; line-height: 1.25;
+}
+#bp-del {
+    background: none; border: none; cursor: pointer;
+    font-size: 11px; color: #475569;
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .12s, color .12s; margin-top: 1px;
+}
+#bp-del:hover { color: #f87171; background: rgba(248,113,113,.18); }
+#bp-del:disabled { opacity: .2; cursor: not-allowed; pointer-events: none; }
+
+/* Nút thu gọn / mở rộng panel trang */
+#bp-toggle {
+    background: none; border: none; cursor: pointer;
+    font-size: 10px; color: #475569;
+    width: 20px; height: 14px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px; padding: 0; margin-bottom: -1px;
+    transition: color .15s, background .15s;
+    line-height: 1;
+}
+#bp-toggle:hover { color: #94a3b8; background: rgba(148,163,184,.12); }
+
+/* Trạng thái thu gọn */
+#page-nav.collapsed {
+    padding: 5px 5px;
+    gap: 2px;
+}
+#page-nav.collapsed #bp-toggle { color: #6366f1; }
+#page-nav.collapsed #page-nav-label,
+#page-nav.collapsed #bp-prev,
+#page-nav.collapsed #bp-info,
+#page-nav.collapsed #bp-next,
+#page-nav.collapsed #bp-del {
+    display: none;
+}
+
 /* Sheet input panel */
 #q-sheet-panel {
     position: fixed;
@@ -1755,6 +1814,16 @@ canvas { touch-action: none; -ms-touch-action: none; }
     <button id="pdf-close-btn" title="Ẩn PDF">✕</button>
 </div>
 <input type="file" id="pdf-file-input" accept=".pdf" style="display:none;">
+
+<!-- ═══════  BOARD PAGE NAVIGATOR  ═══════ -->
+<div id="page-nav">
+    <button id="bp-toggle" title="Thu gọn / Mở rộng">▪︎</button>
+    <div id="page-nav-label">TRANG</div>
+    <button class="pdf-nav" id="bp-prev" title="Trang trước (Ctrl+↑)" disabled>▲</button>
+    <div id="bp-info"><b id="bp-num">1</b><br><span style="color:#475569;font-size:9px">/</span><br><span id="bp-total">1</span></div>
+    <button class="pdf-nav" id="bp-next" title="Thêm trang mới (Ctrl+↓)">＋</button>
+    <button id="bp-del"  title="Xoá trang này">🗑</button>
+</div>
 
 <!-- ═══════════════════════  SCRIPTS  ═══════════════════════ -->
 <script>
@@ -4316,55 +4385,63 @@ window.addEventListener('keydown', e => {
     }
 
     /**
-     * Lưu bảng câu hiện tại → chuyển canvas → hiển thị câu mới.
-     * @param {number} newIndex  — chỉ số câu cần chuyển đến
-     * @param {boolean} isFirst  — true khi mới tải sheet lần đầu (giữ bảng hiện tại làm câu 0)
+     * Lưu bảng câu hiện tại → chuyển canvas + trang → hiển thị câu mới.
+     * qStates[q] = { pages:[{history,step},...], currentPage:N }
+     *            hoặc { history:[...], step:N }  (legacy 1 trang)
      */
     function navigateTo(newIndex, isFirst = false) {
         if (!questions.length) return;
         newIndex = Math.max(0, Math.min(newIndex, questions.length - 1));
 
-        // 1) Lưu trạng thái canvas + undo của câu đang xem
-        //    Không gọi saveState() ở đây — đã được gọi sau mỗi nét vẽ rồi
+        const api = window._bpAPI;  // Board Pages API (có thể chưa load)
+
+        // 1) Lưu toàn bộ trang của câu đang xem
         if (!isFirst) {
-            qStates[qIndex] = {
-                history: state.history.slice(),
-                step:    state.historyStep
-            };
+            qStates[qIndex] = api
+                ? api.saveBoardState()
+                : { pages:[{ history: state.history.slice(), step: state.historyStep }], currentPage: 0 };
         }
 
         qIndex = newIndex;
 
-        // 2) Khôi phục hoặc tạo bảng mới cho câu mới
+        // 2) Khôi phục hoặc tạo bộ trang cho câu mới
         if (qStates[qIndex]) {
-            // Câu đã từng vẽ → khôi phục đúng bảng đó
-            state.history     = qStates[qIndex].history.slice();
-            state.historyStep = qStates[qIndex].step;
-            const url = state.history[state.historyStep];
-            if (url) {
-                restoreState(url);
+            const saved = qStates[qIndex];
+            if (api) {
+                // Normalise: hỗ trợ cả format cũ {history,step} lẫn format mới {pages,currentPage}
+                const pagesArr = saved.pages
+                    || [{ history: (saved.history||[]).slice(), step: saved.step ?? -1 }];
+                api.loadBoardState(pagesArr, saved.currentPage || 0);
             } else {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Fallback: dùng trang đầu tiên
+                const pg = (saved.pages || [saved])[0];
+                state.history     = (pg.history || []).slice();
+                state.historyStep = pg.step ?? -1;
+                const url = state.history[state.historyStep];
+                if (url) restoreState(url);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+                syncHistoryBtns();
             }
         } else if (isFirst) {
-            // Lần đầu load: bảng hiện tại trở thành bảng câu 0 — không xoá gì
-            saveState();
-            qStates[qIndex] = {
-                history: state.history.slice(),
-                step:    state.historyStep
-            };
+            // Lần đầu: giữ nguyên canvas + trang hiện tại
+            if (api) {
+                qStates[qIndex] = api.saveBoardState();
+            } else {
+                saveState();
+                qStates[qIndex] = { pages:[{ history: state.history.slice(), step: state.historyStep }], currentPage: 0 };
+            }
         } else {
-            // Câu chưa từng vẽ → bảng trắng
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            state.history     = [];
-            state.historyStep = -1;
-            saveState();
-            qStates[qIndex] = {
-                history: state.history.slice(),
-                step:    state.historyStep
-            };
+            // Câu hoàn toàn mới → 1 trang trắng
+            if (api) {
+                api.loadBoardState([{ history: [], step: -1 }], 0);
+                qStates[qIndex] = api.saveBoardState();
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                state.history = []; state.historyStep = -1;
+                saveState();
+                qStates[qIndex] = { pages:[{ history: state.history.slice(), step: state.historyStep }], currentPage: 0 };
+            }
         }
-        syncHistoryBtns();
 
         // 3) Cập nhật UI câu hỏi
         showQuestion();
@@ -5028,6 +5105,152 @@ window.addEventListener('keydown', e => {
 
     window.addEventListener('resize', () => {
         if (mode === 'pdfjs') goTo(currentPage);
+    });
+
+})();
+
+/* ─────────────────────────────────────────────
+   BOARD PAGES — đa trang vẽ
+   • Mỗi trang lưu riêng canvas + lịch sử undo
+   • Tích hợp với question system (mỗi câu hỏi có bộ trang riêng)
+───────────────────────────────────────────── */
+(function initBoardPages() {
+
+    const btnPrev   = document.getElementById('bp-prev');
+    const btnNext   = document.getElementById('bp-next');
+    const btnDel    = document.getElementById('bp-del');
+    const btnToggle = document.getElementById('bp-toggle');
+    const navPanel  = document.getElementById('page-nav');
+    const numEl     = document.getElementById('bp-num');
+    const totalEl   = document.getElementById('bp-total');
+
+    /* ── Bộ trang hiện tại ── */
+    let pages   = [];   // [{history:[], step:N}, ...]
+    let current = 0;    // trang đang xem (0-indexed)
+
+    /* ── Helpers ── */
+
+    function updateNav() {
+        numEl.textContent   = current + 1;
+        totalEl.textContent = pages.length;
+        btnPrev.disabled = current <= 0;
+        const isLast = current >= pages.length - 1;
+        btnNext.textContent = isLast ? '＋' : '▼';
+        btnNext.title       = isLast ? 'Thêm trang mới (Ctrl+↓)' : 'Trang sau (Ctrl+↓)';
+        btnDel.disabled     = pages.length <= 1;
+    }
+
+    /** Lưu canvas hiện tại vào pages[current] */
+    function saveCurrentPage() {
+        pages[current] = {
+            history: state.history.slice(),
+            step:    state.historyStep
+        };
+    }
+
+    /** Hiển thị nội dung trang pg lên canvas */
+    function applyPage(pg) {
+        if (pg && pg.history && pg.history.length > 0 && pg.step >= 0) {
+            state.history     = pg.history.slice();
+            state.historyStep = pg.step;
+            restoreState(state.history[state.historyStep]);
+        } else {
+            // Trang trắng
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            state.history     = [];
+            state.historyStep = -1;
+            saveState();
+            pages[current] = { history: state.history.slice(), step: state.historyStep };
+        }
+        syncHistoryBtns();
+    }
+
+    /** Chuyển đến trang idx (tạo mới nếu vượt quá) */
+    function switchPage(idx) {
+        idx = Math.max(0, idx);
+        saveCurrentPage();
+        if (idx >= pages.length) {
+            pages.push({ history: [], step: -1 });   // trang trắng mới
+        }
+        current = idx;
+        applyPage(pages[current]);
+        updateNav();
+        showToast(`📄 Trang ${current + 1} / ${pages.length}`);
+    }
+
+    /* ═══════════════════════════════════════
+       PUBLIC API — dùng bởi question system
+    ═══════════════════════════════════════ */
+
+    /**
+     * Lưu trạng thái bộ trang hiện tại (dùng trước khi chuyển câu hỏi).
+     * @returns {{ pages, currentPage }}
+     */
+    function saveBoardState() {
+        saveCurrentPage();
+        return {
+            pages:       pages.map(p => ({ history: p.history.slice(), step: p.step })),
+            currentPage: current
+        };
+    }
+
+    /**
+     * Nạp bộ trang mới (dùng sau khi chuyển câu hỏi).
+     * @param {Array}  newPages    — mảng {history, step}
+     * @param {number} pageIdx     — trang cần hiển thị
+     */
+    function loadBoardState(newPages, pageIdx) {
+        pages   = newPages.map(p => ({ history: (p.history || []).slice(), step: p.step }));
+        current = Math.max(0, Math.min(pageIdx || 0, pages.length - 1));
+        applyPage(pages[current]);
+        updateNav();
+    }
+
+    // Expose globally
+    window._bpAPI = { saveBoardState, loadBoardState, switchPage };
+
+    /* ── Khởi tạo: sau khi canvas sẵn sàng ── */
+    setTimeout(() => {
+        pages   = [{ history: state.history.slice(), step: state.historyStep }];
+        current = 0;
+        updateNav();
+    }, 150);
+
+    /* ── Toggle thu gọn / mở rộng ── */
+    let _collapsed = false;
+    function setCollapsed(val) {
+        _collapsed = val;
+        navPanel.classList.toggle('collapsed', _collapsed);
+        btnToggle.textContent = _collapsed ? '☰' : '▪︎';
+        btnToggle.title       = _collapsed ? 'Mở rộng bảng trang' : 'Thu gọn';
+        try { localStorage.setItem('bp_collapsed', _collapsed ? '1' : '0'); } catch(_) {}
+    }
+    btnToggle.addEventListener('click', () => setCollapsed(!_collapsed));
+
+    // Khôi phục trạng thái thu gọn từ lần trước
+    try { if (localStorage.getItem('bp_collapsed') === '1') setCollapsed(true); } catch(_) {}
+
+    /* ── Events ── */
+    btnPrev.addEventListener('click', () => switchPage(current - 1));
+    btnNext.addEventListener('click', () => switchPage(current + 1));
+
+    btnDel.addEventListener('click', () => {
+        if (pages.length <= 1) return;
+        if (!confirm(`Xoá trang ${current + 1}? Không thể hoàn tác.`)) return;
+        pages.splice(current, 1);
+        current = Math.min(current, pages.length - 1);
+        applyPage(pages[current]);
+        updateNav();
+        showToast(`🗑 Đã xoá trang — còn ${pages.length} trang`);
+    });
+
+    /* Ctrl+↓ / Ctrl+↑ để chuyển trang */
+    window.addEventListener('keydown', e => {
+        if (!e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
+        if (document.activeElement.tagName === 'INPUT' ||
+            document.activeElement.tagName === 'TEXTAREA') return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); switchPage(current + 1); }
+        if (e.key === 'ArrowUp')   { e.preventDefault(); switchPage(current - 1); }
     });
 
 })();
