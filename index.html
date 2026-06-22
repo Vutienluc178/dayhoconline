@@ -329,151 +329,204 @@ window.MathJax = {
     border-color: #6366f1; color: #c7d2fe;
 }
 
-/* ══ Lesson panel — right-side floating drawer ══ */
+/* ══ Lesson pill — floating status bar ══ */
 #lesson-panel {
     position: fixed;
-    right: 0; top: 0; bottom: 0;
-    width: 288px;
-    z-index: 800;
-    background: rgba(8,12,28,.96);
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-    border-left: 1px solid rgba(255,255,255,.08);
-    display: none;
-    flex-direction: column;
-    box-shadow: -6px 0 40px rgba(0,0,0,.5);
-    transform: translateX(100%);
-    transition: transform .28s cubic-bezier(.4,0,.2,1);
+    bottom: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 820;
+    display: none; flex-direction: row; align-items: center; gap: 8px;
+    background: rgba(8,12,28,.94);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(16,185,129,.3);
+    border-radius: 99px;
+    padding: 5px 7px 5px 14px;
+    box-shadow: 0 2px 24px rgba(0,0,0,.5);
+    user-select: none; white-space: nowrap;
 }
-#lesson-panel.open {
-    display: flex;
-    transform: translateX(0);
+#lesson-panel.open { display: flex; }
+#ls-pill-title {
+    font-size: 12px; font-weight: 700; color: #34d399;
+    max-width: 220px; overflow: hidden; text-overflow: ellipsis;
 }
-
-/* Header bar */
-#lesson-header {
-    display: flex; align-items: center; gap: 6px;
-    padding: 10px 12px 9px;
-    border-bottom: 1px solid rgba(255,255,255,.07);
-    flex-shrink: 0;
+#ls-pill-count {
+    font-size: 10px; color: #475569;
 }
-#lesson-title-label {
-    font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
-    color: #10b981; text-transform: uppercase; flex: 1;
+#ls-present-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none; border-radius: 99px; color: #fff;
+    font-size: 11.5px; font-weight: 700;
+    padding: 6px 14px; cursor: pointer;
+    transition: opacity .15s; display: flex; align-items: center; gap: 5px;
 }
-#lesson-sec-nav {
-    display: flex; align-items: center; gap: 2px;
-}
-#lesson-sec-counter {
-    font-size: 10px; font-weight: 700; color: #475569;
-    min-width: 34px; text-align: center;
-}
-.ls-nav-btn {
-    background: none; border: none; cursor: pointer;
-    color: #475569; font-size: 11px;
-    width: 22px; height: 22px; border-radius: 5px;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .12s, color .12s; flex-shrink: 0;
-}
-.ls-nav-btn:hover:not(:disabled) { background: rgba(16,185,129,.2); color: #34d399; }
-.ls-nav-btn:disabled { opacity: .22; cursor: not-allowed; }
-#lesson-close-btn {
+#ls-present-btn:hover { opacity: .88; }
+#ls-close-lesson {
     background: none; border: none; cursor: pointer;
     color: #334155; font-size: 12px;
-    width: 22px; height: 22px; border-radius: 50%;
+    width: 24px; height: 24px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    transition: background .12s, color .12s; margin-left: 2px;
+    transition: color .12s, background .12s;
 }
-#lesson-close-btn:hover { color: #f87171; background: rgba(248,113,113,.18); }
+#ls-close-lesson:hover { color: #f87171; background: rgba(248,113,113,.15); }
 
-/* Section content area */
-#lesson-body {
-    flex: 1; overflow-y: auto; padding: 10px 14px 20px;
-    scrollbar-width: thin; scrollbar-color: rgba(16,185,129,.2) transparent;
+/* ══ SLIDE OVERLAY — toàn màn hình trình chiếu ══ */
+#lesson-slide {
+    position: fixed; inset: 0; z-index: 9000;
+    background: #07091a;
+    display: none; flex-direction: column;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
 }
-#lesson-body::-webkit-scrollbar { width: 4px; }
-#lesson-body::-webkit-scrollbar-thumb { background: rgba(16,185,129,.25); border-radius: 2px; }
+#lesson-slide.active { display: flex; }
 
-/* Section title (# heading) */
-.ls-h1 {
-    display: flex; align-items: flex-start; gap: 8px;
-    margin: 2px 0 10px; padding-bottom: 8px;
-    border-bottom: 1px solid rgba(16,185,129,.18);
+/* Decorative accent blobs */
+#lesson-slide::before {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+        radial-gradient(ellipse at 85% 10%, rgba(99,102,241,.1) 0%, transparent 45%),
+        radial-gradient(ellipse at 10% 90%, rgba(16,185,129,.08) 0%, transparent 40%);
 }
-.ls-h1-badge {
-    flex-shrink: 0; margin-top: 3px;
-    width: 4px; height: 18px;
-    background: linear-gradient(180deg, #6366f1, #10b981);
-    border-radius: 2px;
+
+/* Top bar */
+#lsl-topbar {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 28px 12px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    flex-shrink: 0;
 }
-.ls-h1-text {
-    font-size: 14px; font-weight: 800; line-height: 1.35;
-    background: linear-gradient(90deg, #a5b4fc 10%, #34d399 90%);
+#lsl-dots { display: flex; gap: 7px; flex: 1; align-items: center; }
+.lsl-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,.12);
+    transition: all .3s; cursor: pointer; flex-shrink: 0;
+}
+.lsl-dot.done  { background: rgba(16,185,129,.38); }
+.lsl-dot.active { background: #10b981; transform: scale(1.4);
+                  box-shadow: 0 0 8px rgba(16,185,129,.7); }
+#lsl-sec-label {
+    font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    color: #334155; text-transform: uppercase;
+}
+#lsl-exit {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 99px; color: #475569;
+    font-size: 11px; font-weight: 600;
+    padding: 5px 14px; cursor: pointer; transition: all .15s;
+    font-family: inherit;
+}
+#lsl-exit:hover { color: #f87171; border-color: rgba(248,113,113,.35); background: rgba(248,113,113,.07); }
+
+/* Stage */
+#lsl-stage {
+    flex: 1; position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 32px 10vw 20px;
+    overflow: hidden; cursor: pointer;
+}
+#lsl-stage:active { opacity: .97; }
+
+/* Section title */
+#lsl-title {
+    font-size: 3.4vw; font-weight: 800; line-height: 1.18;
+    text-align: center; margin-bottom: 3.2vh;
+    background: linear-gradient(100deg, #a5b4fc 5%, #34d399 95%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: .01em;
+    max-width: 860px; width: 100%;
+    transition: opacity .5s ease;
+}
+#lsl-title.ls-compact { font-size: 2.4vw; margin-bottom: 2.2vh; }
+
+/* Content block */
+#lsl-content {
+    display: flex; flex-direction: column; gap: 1.4vh;
+    width: 100%; max-width: 860px;
 }
 
-/* Sub-heading (## heading) */
-.ls-h2 {
-    display: flex; align-items: center; gap: 7px;
-    margin: 14px 0 5px;
-}
-.ls-h2-badge {
+/* Reveal animation for each element */
+.lsl-elem {
+    opacity: 0; transform: translateY(18px);
+    transition: opacity .38s cubic-bezier(.4,0,.2,1),
+                transform .38s cubic-bezier(.4,0,.2,1);
     flex-shrink: 0;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #10b981;
-    box-shadow: 0 0 6px rgba(16,185,129,.55);
 }
-.ls-h2-text {
-    font-size: 12.5px; font-weight: 700;
-    color: #34d399; letter-spacing: .02em;
-}
+.lsl-elem.vis { opacity: 1; transform: none; }
 
-/* Sub-sub-heading (### heading) */
-.ls-h3 {
-    display: flex; align-items: center; gap: 6px;
-    margin: 10px 0 4px; padding-left: 4px;
+/* ## sub-heading */
+.lsl-h2 { display: flex; align-items: center; gap: 11px; }
+.lsl-h2-dot {
+    width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
+    background: #10b981; box-shadow: 0 0 10px rgba(16,185,129,.65);
 }
-.ls-h3-dash {
-    color: #6366f1; font-weight: 900; font-size: 13px; flex-shrink: 0;
-}
-.ls-h3-text {
-    font-size: 11.5px; font-weight: 600;
-    color: #a5b4fc;
-}
+.lsl-h2-text { font-size: 2vw; font-weight: 700; color: #34d399; line-height: 1.25; }
 
-/* Note box (> prefix) */
-.ls-note {
-    display: flex; gap: 8px; align-items: flex-start;
-    margin: 8px 0;
-    padding: 8px 10px;
-    background: rgba(245,158,11,.09);
+/* ### small heading */
+.lsl-h3 { display: flex; align-items: center; gap: 9px; padding-left: 22px; }
+.lsl-h3-arrow { color: #6366f1; font-size: 1.3vw; flex-shrink: 0; font-weight: 900; }
+.lsl-h3-text { font-size: 1.55vw; font-weight: 600; color: #a5b4fc; line-height: 1.3; }
+
+/* > note */
+.lsl-note {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: rgba(245,158,11,.07);
     border: 1px solid rgba(245,158,11,.22);
-    border-radius: 8px;
+    border-left: 3px solid #f59e0b;
+    border-radius: 10px; padding: 1.2vh 1.4vw;
 }
-.ls-note-icon { flex-shrink: 0; font-size: 12px; margin-top: 1px; }
-.ls-note-text { font-size: 11px; color: #fde68a; line-height: 1.55; }
+.lsl-note-icon { font-size: 1.3vw; flex-shrink: 0; margin-top: 2px; }
+.lsl-note-text { font-size: 1.3vw; color: #fde68a; line-height: 1.55; }
+.lsl-note-text mjx-container { font-size: inherit !important; }
 
-/* Formula box (| prefix) */
-.ls-formula {
-    margin: 8px 0;
-    padding: 9px 12px;
+/* | formula | */
+.lsl-formula {
     background: rgba(99,102,241,.1);
-    border: 1px solid rgba(99,102,241,.28);
-    border-radius: 8px;
-    font-size: 12px; color: #c7d2fe;
-    text-align: center; line-height: 1.6;
+    border: 1px solid rgba(99,102,241,.3);
+    border-radius: 10px; padding: 1.4vh 2vw;
+    text-align: center; font-size: 1.9vw; color: #c7d2fe; line-height: 1.55;
     font-family: 'Cambria Math', 'STIX Two Math', serif;
 }
+.lsl-formula mjx-container { font-size: inherit !important; }
 
-/* Body paragraph */
-.ls-body {
-    font-size: 11.5px; color: #94a3b8;
-    line-height: 1.65; margin: 4px 0;
-    padding-left: 4px;
+/* body text */
+.lsl-body { font-size: 1.35vw; color: #94a3b8; line-height: 1.65; padding-left: 2px; }
+.lsl-body mjx-container { font-size: inherit !important; }
+
+/* Bottom bar */
+#lsl-bottombar {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 28px;
+    border-top: 1px solid rgba(255,255,255,.04);
+    flex-shrink: 0;
 }
-.ls-body mjx-container { font-size: inherit !important; }
+.lsl-nav {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 10px; color: #475569;
+    padding: 8px 22px; cursor: pointer;
+    transition: all .15s; font-family: inherit;
+    font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 7px;
+}
+.lsl-nav:hover:not([disabled]) {
+    background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.3); color: #34d399;
+}
+.lsl-nav[disabled] { opacity: .22; cursor: not-allowed; }
+#lsl-status {
+    flex: 1; text-align: center;
+    font-size: 11px; color: #1e293b; line-height: 1.8;
+}
+#lsl-elem-dots { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin-bottom: 2px; }
+.lsl-edot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,255,255,.08);
+    transition: background .3s;
+}
+.lsl-edot.vis { background: rgba(16,185,129,.55); }
+.lsl-edot.cur { background: #10b981; }
+#lsl-hint { font-size: 10px; color: #1a2030; }
 
 /* Sidebar lesson trigger button */
 #btn-lesson-load {
@@ -2036,22 +2089,38 @@ canvas { touch-action: none; -ms-touch-action: none; }
     <canvas id="main-canvas" style="position:absolute;inset:0;z-index:10;touch-action:none;cursor:crosshair;"></canvas>
 </div>
 
-<!-- ═══════  LESSON PANEL (right-side drawer)  ═══════ -->
+<!-- ═══════  LESSON PILL — status khi bài học đã tải  ═══════ -->
 <div id="lesson-panel">
-    <div id="lesson-header">
-        <span id="lesson-title-label">📖 Bài học</span>
-        <div id="lesson-sec-nav">
-            <button class="ls-nav-btn" id="lesson-prev-sec" title="Phần trước" disabled>◀</button>
-            <span id="lesson-sec-counter">—</span>
-            <button class="ls-nav-btn" id="lesson-next-sec" title="Phần sau" disabled>▶</button>
-        </div>
-        <button id="lesson-close-btn" title="Đóng bài học">✕</button>
+    <span id="ls-pill-title">📖 Bài học</span>
+    <span id="ls-pill-count">0 phần</span>
+    <button id="ls-present-btn">▶ Trình chiếu</button>
+    <button id="ls-close-lesson" title="Xoá bài học">✕</button>
+</div>
+
+<!-- ═══════  LESSON SLIDE — trình chiếu toàn màn hình  ═══════ -->
+<div id="lesson-slide">
+
+    <!-- Top: dots + section label + exit -->
+    <div id="lsl-topbar">
+        <div id="lsl-dots"></div>
+        <div id="lsl-sec-label">Phần 1 / 1</div>
+        <button id="lsl-exit">✕ Thoát (ESC)</button>
     </div>
-    <div id="lesson-body">
-        <div style="color:#334155;font-size:12px;text-align:center;margin-top:40px;line-height:2">
-            Chưa có bài học.<br>
-            <span style="font-size:10px">Nhấn <b style="color:#34d399">Bài học</b> trong thanh công cụ để tải.</span>
+
+    <!-- Stage: click anywhere = next -->
+    <div id="lsl-stage">
+        <div id="lsl-title"></div>
+        <div id="lsl-content"></div>
+    </div>
+
+    <!-- Bottom: nav + progress -->
+    <div id="lsl-bottombar">
+        <button class="lsl-nav" id="lsl-prev" disabled>◀ Lùi</button>
+        <div id="lsl-status">
+            <div id="lsl-elem-dots"></div>
+            <div id="lsl-hint">Click / Space / → tiếp &nbsp;·&nbsp; ← lùi &nbsp;·&nbsp; ESC thoát</div>
         </div>
+        <button class="lsl-nav" id="lsl-next">Tiếp ▶</button>
     </div>
 </div>
 
@@ -5150,13 +5219,12 @@ window.addEventListener('keydown', e => {
 ───────────────────────────────────────────── */
 (function initLessonSystem() {
 
-    /* ══ DOM ══ */
-    const panel       = document.getElementById('lesson-panel');
-    const bodyEl      = document.getElementById('lesson-body');
-    const secCounter  = document.getElementById('lesson-sec-counter');
-    const btnPrevSec  = document.getElementById('lesson-prev-sec');
-    const btnNextSec  = document.getElementById('lesson-next-sec');
-    const btnClose    = document.getElementById('lesson-close-btn');
+    /* ══ DOM — Pill ══ */
+    const pill        = document.getElementById('lesson-panel');
+    const pillTitle   = document.getElementById('ls-pill-title');
+    const pillCount   = document.getElementById('ls-pill-count');
+    const pillPresent = document.getElementById('ls-present-btn');
+    const pillClose   = document.getElementById('ls-close-lesson');
     const sideBtn     = document.getElementById('btn-lesson-load');
     const inputPanel  = document.getElementById('lesson-sheet-panel');
     const sheetInput  = document.getElementById('lesson-sheet-input');
@@ -5165,116 +5233,179 @@ window.addEventListener('keydown', e => {
     const csvLoadBtn  = document.getElementById('lesson-csv-load-btn');
     const sheetMsg    = document.getElementById('lesson-sheet-msg');
 
+    /* ══ DOM — Slide overlay ══ */
+    const slideEl     = document.getElementById('lesson-slide');
+    const lslDots     = document.getElementById('lsl-dots');
+    const lslSecLabel = document.getElementById('lsl-sec-label');
+    const lslExit     = document.getElementById('lsl-exit');
+    const lslStage    = document.getElementById('lsl-stage');
+    const lslTitle    = document.getElementById('lsl-title');
+    const lslContent  = document.getElementById('lsl-content');
+    const lslElemDots = document.getElementById('lsl-elem-dots');
+    const lslPrev     = document.getElementById('lsl-prev');
+    const lslNext     = document.getElementById('lsl-next');
+
     /* ══ Trạng thái ══ */
-    let rows     = [];   // mảng chuỗi từ Google Sheet
-    let sections = [];   // [{startIdx, title}] — mỗi phần bắt đầu bằng "# "
-    let curSec   = 0;    // phần đang hiển thị
+    let parsedSecs = [];  // [{title, elems:[{type,raw}]}]
+    let sIdx = 0;         // section hiện tại
+    let eIdx = -1;        // element đang reveal (-1 = chỉ hiện title)
 
     /* ════════════════════════════════════════
-       PHẦN 1: PHÂN TÍCH & RENDER NỘI DUNG
+       PHẦN 1: PARSE DỮ LIỆU
     ════════════════════════════════════════ */
 
-    /**
-     * Chuyển 1 dòng CSV thành HTML với đề mục màu sắc chuyên nghiệp.
-     * Quy tắc prefix:
-     *   #  → h1 (gradient tím-xanh)   ## → h2 (teal)   ### → h3 (indigo)
-     *   >  → hộp ghi chú (amber)       | → hộp công thức (indigo)
-     *   thường → đoạn văn (hỗ trợ $LaTeX$)
-     */
-    function rowToHtml(raw) {
-        const s = raw.trim();
-        if (!s) return '';
-
-        if (s.startsWith('### ')) {
-            const txt = escHtml(s.slice(4).trim());
-            return `<div class="ls-h3"><span class="ls-h3-dash">›</span><span class="ls-h3-text">${txt}</span></div>`;
-        }
-        if (s.startsWith('## ')) {
-            const txt = escHtml(s.slice(3).trim());
-            return `<div class="ls-h2"><span class="ls-h2-badge"></span><span class="ls-h2-text">${txt}</span></div>`;
-        }
-        if (s.startsWith('# ')) {
-            // h1 chỉ render 1 lần (đã hiện ở tiêu đề phần)
-            return '';
-        }
-        if (s.startsWith('> ')) {
-            const txt = escHtml(s.slice(2).trim());
-            return `<div class="ls-note"><span class="ls-note-icon">💡</span><span class="ls-note-text">${txt}</span></div>`;
-        }
-        if (s.startsWith('| ') && s.endsWith(' |')) {
-            const txt = s.slice(2, -2).trim();
-            return `<div class="ls-formula">${txt}</div>`;
-        }
-        // Đoạn thường
-        const txt = escHtml(s);
-        return `<div class="ls-body">${txt}</div>`;
-    }
-
-    function escHtml(t) {
+    function escH(t) {
         return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
-    /** Xây dựng danh sách sections từ rows */
-    function buildSections() {
-        sections = [];
-        rows.forEach((r, i) => {
-            if (r.trim().startsWith('# ') || (sections.length === 0)) {
-                if (sections.length === 0 && !r.trim().startsWith('# ')) {
-                    sections.push({ startIdx: 0, title: 'Nội dung' });
-                } else if (r.trim().startsWith('# ')) {
-                    sections.push({ startIdx: i, title: r.trim().slice(2).trim() });
-                }
+    function parseRows(rows) {
+        const secs = [];
+        let cur = null;
+        for (const row of rows) {
+            const s = row.trim();
+            if (!s) continue;
+            if (s.startsWith('# ')) {
+                if (cur) secs.push(cur);
+                cur = { title: s.slice(2).trim(), elems: [] };
+            } else {
+                if (!cur) cur = { title: 'Bài học', elems: [] };
+                if      (s.startsWith('## '))             cur.elems.push({ type:'h2',      raw: s.slice(3).trim() });
+                else if (s.startsWith('### '))            cur.elems.push({ type:'h3',      raw: s.slice(4).trim() });
+                else if (s.startsWith('> '))              cur.elems.push({ type:'note',    raw: s.slice(2).trim() });
+                else if (s.startsWith('| ') && s.endsWith(' |')) cur.elems.push({ type:'formula', raw: s.slice(2,-2).trim() });
+                else                                      cur.elems.push({ type:'body',    raw: s });
             }
-        });
-        if (!sections.length) sections = [{ startIdx: 0, title: 'Nội dung' }];
+        }
+        if (cur) secs.push(cur);
+        return secs.length ? secs : [{ title:'Bài học', elems:[] }];
     }
 
-    /** Hiển thị phần secIdx */
-    async function showSection(idx) {
-        if (!sections.length) return;
-        idx = Math.max(0, Math.min(idx, sections.length - 1));
-        curSec = idx;
-
-        const sec     = sections[idx];
-        const nextSec = sections[idx + 1];
-        const endIdx  = nextSec ? nextSec.startIdx : rows.length;
-
-        // Tiêu đề phần
-        const titleHtml = `
-            <div class="ls-h1">
-                <div class="ls-h1-badge"></div>
-                <div class="ls-h1-text">${escHtml(sec.title)}</div>
-            </div>`;
-
-        // Nội dung các dòng trong phần (bỏ dòng đầu nếu là # heading)
-        let contentHtml = '';
-        for (let i = sec.startIdx; i < endIdx; i++) {
-            contentHtml += rowToHtml(rows[i]);
+    function elemToHtml(el) {
+        switch(el.type) {
+            case 'h2':
+                return `<div class="lsl-h2"><span class="lsl-h2-dot"></span><span class="lsl-h2-text">${escH(el.raw)}</span></div>`;
+            case 'h3':
+                return `<div class="lsl-h3"><span class="lsl-h3-arrow">›</span><span class="lsl-h3-text">${escH(el.raw)}</span></div>`;
+            case 'note':
+                return `<div class="lsl-note"><span class="lsl-note-icon">💡</span><span class="lsl-note-text">${escH(el.raw)}</span></div>`;
+            case 'formula':
+                return `<div class="lsl-formula">${el.raw}</div>`;
+            default:
+                return `<div class="lsl-body">${escH(el.raw)}</div>`;
         }
-
-        bodyEl.innerHTML = titleHtml + contentHtml;
-
-        // Render MathJax nếu có
-        if (window.MathJax && MathJax.typesetPromise) {
-            try {
-                if (MathJax.typesetClear) MathJax.typesetClear([bodyEl]);
-                await MathJax.typesetPromise([bodyEl]);
-            } catch(_) {}
-        }
-
-        bodyEl.scrollTop = 0;
-        updateSecNav();
-    }
-
-    function updateSecNav() {
-        const total = sections.length;
-        secCounter.textContent = total > 1 ? `${curSec + 1} / ${total}` : '—';
-        btnPrevSec.disabled = curSec <= 0;
-        btnNextSec.disabled = curSec >= sections.length - 1;
     }
 
     /* ════════════════════════════════════════
-       PHẦN 2: TẢI DỮ LIỆU
+       PHẦN 2: SLIDE ENGINE
+    ════════════════════════════════════════ */
+
+    function renderSection() {
+        const sec   = parsedSecs[sIdx];
+        const total = parsedSecs.length;
+
+        // Section title
+        lslTitle.textContent = sec.title;
+        lslTitle.classList.toggle('ls-compact', sec.title.length > 42);
+
+        // Section dots (top)
+        lslDots.innerHTML = parsedSecs.map((_, i) =>
+            `<div class="lsl-dot ${i < sIdx ? 'done' : i === sIdx ? 'active' : ''}"
+                  onclick=""></div>`
+        ).join('');
+
+        lslSecLabel.textContent = `Phần ${sIdx + 1} / ${total}`;
+
+        // Element cards (all hidden)
+        lslContent.innerHTML = sec.elems.map((el, i) =>
+            `<div class="lsl-elem" data-ei="${i}">${elemToHtml(el)}</div>`
+        ).join('');
+
+        // Reveal up to eIdx
+        lslContent.querySelectorAll('.lsl-elem').forEach((el, i) => {
+            if (i <= eIdx) el.classList.add('vis');
+        });
+
+        // Elem progress dots (bottom)
+        lslElemDots.innerHTML = sec.elems.map((_, i) =>
+            `<div class="lsl-edot ${i < eIdx ? 'vis' : i === eIdx ? 'cur' : ''}"></div>`
+        ).join('');
+
+        updateSlideNav();
+
+        // MathJax
+        if (window.MathJax?.typesetPromise) {
+            try {
+                if (MathJax.typesetClear) MathJax.typesetClear([lslContent]);
+                MathJax.typesetPromise([lslContent]).catch(()=>{});
+            } catch(_) {}
+        }
+    }
+
+    function revealNext() {
+        const sec = parsedSecs[sIdx];
+        if (eIdx < sec.elems.length - 1) {
+            eIdx++;
+            // Reveal just the new element
+            const el = lslContent.querySelector(`.lsl-elem[data-ei="${eIdx}"]`);
+            if (el) requestAnimationFrame(() => el.classList.add('vis'));
+            // Update elem dots
+            lslElemDots.querySelectorAll('.lsl-edot').forEach((d, i) => {
+                d.className = `lsl-edot${i < eIdx ? ' vis' : i === eIdx ? ' cur' : ''}`;
+            });
+            updateSlideNav();
+        } else if (sIdx < parsedSecs.length - 1) {
+            // Next section
+            sIdx++;
+            eIdx = -1;
+            renderSection();
+        }
+        // Update section dots
+        lslDots.querySelectorAll('.lsl-dot').forEach((d, i) => {
+            d.className = `lsl-dot${i < sIdx ? ' done' : i === sIdx ? ' active' : ''}`;
+        });
+    }
+
+    function revealPrev() {
+        if (eIdx >= 0) {
+            // Hide current element
+            const el = lslContent.querySelector(`.lsl-elem[data-ei="${eIdx}"]`);
+            if (el) el.classList.remove('vis');
+            eIdx--;
+            lslElemDots.querySelectorAll('.lsl-edot').forEach((d, i) => {
+                d.className = `lsl-edot${i < eIdx ? ' vis' : i === eIdx ? ' cur' : ''}`;
+            });
+            updateSlideNav();
+        } else if (sIdx > 0) {
+            sIdx--;
+            eIdx = parsedSecs[sIdx].elems.length - 1;
+            renderSection();
+        }
+        lslDots.querySelectorAll('.lsl-dot').forEach((d, i) => {
+            d.className = `lsl-dot${i < sIdx ? ' done' : i === sIdx ? ' active' : ''}`;
+        });
+    }
+
+    function updateSlideNav() {
+        const sec    = parsedSecs[sIdx];
+        const isFirst = sIdx === 0 && eIdx < 0;
+        const isLast  = sIdx === parsedSecs.length - 1 && eIdx >= sec.elems.length - 1;
+        lslPrev.disabled = isFirst;
+        lslNext.disabled = isLast;
+        lslNext.textContent = isLast ? '✓ Kết thúc' : 'Tiếp ▶';
+    }
+
+    function enterSlide() {
+        sIdx = 0; eIdx = -1;
+        slideEl.classList.add('active');
+        renderSection();
+    }
+
+    function exitSlide() {
+        slideEl.classList.remove('active');
+    }
+
+    /* ════════════════════════════════════════
+       PHẦN 3: TẢI DỮ LIỆU
     ════════════════════════════════════════ */
 
     function setMsg(text, color = '#64748b') {
@@ -5298,13 +5429,17 @@ window.addEventListener('keydown', e => {
     function loadFromCsvText(csvText) {
         const parsed = parseCsvRows(csvText);
         if (!parsed.length) { setMsg('⚠ Không tìm thấy nội dung!', '#f87171'); return false; }
-        rows = parsed;
-        buildSections();
-        curSec = 0;
-        setMsg(`✓ Đã tải ${rows.length} dòng — ${sections.length} phần`, '#34d399');
-        openPanel();
-        showSection(0);
-        showToast(`📖 Bài học: ${sections.length} phần, ${rows.length} dòng`);
+        parsedSecs = parseRows(parsed);
+        setMsg(`✓ Đã tải ${parsed.length} dòng — ${parsedSecs.length} phần`, '#34d399');
+        // Cập nhật pill
+        pillTitle.textContent = '📖 ' + parsedSecs[0].title;
+        pillCount.textContent = parsedSecs.length + ' phần';
+        pill.classList.add('open');
+        sideBtn.classList.add('ll-active');
+        inputPanel.classList.remove('open');
+        // Vào slide ngay
+        enterSlide();
+        showToast(`📖 Bài học: ${parsedSecs.length} phần — bắt đầu trình chiếu!`);
         return true;
     }
 
@@ -5334,46 +5469,55 @@ window.addEventListener('keydown', e => {
         const m = raw.match(/\/spreadsheets\/d\/([^/]+)/);
         if (m) {
             const gidM = raw.match(/[?&#]gid=(\d+)/);
-            const gid  = gidM ? gidM[1] : '0';
-            return `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv&gid=${gid}`;
+            return `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv&gid=${gidM?.[1]||'0'}`;
         }
         return raw;
     }
 
     /* ════════════════════════════════════════
-       PHẦN 3: UI & EVENTS
+       PHẦN 4: EVENTS
     ════════════════════════════════════════ */
 
-    function openPanel() {
-        panel.classList.add('open');
-        sideBtn.classList.add('ll-active');
-        inputPanel.classList.remove('open');
-    }
-
-    function closeLesson() {
-        panel.classList.remove('open');
-        sideBtn.classList.remove('ll-active');
-    }
-
-    // Toggle input panel khi click nút sidebar
+    // Sidebar toggle
     sideBtn.addEventListener('click', () => {
-        if (inputPanel.classList.contains('open')) {
-            inputPanel.classList.remove('open');
-        } else {
-            inputPanel.classList.add('open');
+        // Nếu đã có bài học → vào slide ngay
+        if (parsedSecs.length && !inputPanel.classList.contains('open')) {
+            enterSlide(); return;
         }
+        inputPanel.classList.toggle('open');
     });
-
-    // Đóng input panel khi click ra ngoài
     document.addEventListener('click', e => {
-        if (!inputPanel.contains(e.target) && e.target !== sideBtn) {
+        if (!inputPanel.contains(e.target) && e.target !== sideBtn)
             inputPanel.classList.remove('open');
-        }
     }, true);
 
-    btnClose.addEventListener('click', closeLesson);
-    btnPrevSec.addEventListener('click', () => showSection(curSec - 1));
-    btnNextSec.addEventListener('click', () => showSection(curSec + 1));
+    // Pill
+    pillPresent.addEventListener('click', enterSlide);
+    pillClose.addEventListener('click', () => {
+        pill.classList.remove('open');
+        sideBtn.classList.remove('ll-active');
+        parsedSecs = [];
+    });
+
+    // Slide navigation
+    lslExit.addEventListener('click', exitSlide);
+    lslNext.addEventListener('click', revealNext);
+    lslPrev.addEventListener('click', revealPrev);
+    lslStage.addEventListener('click', e => {
+        // Click stage = next (trừ khi click nút)
+        if (e.target.closest('button')) return;
+        revealNext();
+    });
+
+    // Keyboard
+    window.addEventListener('keydown', e => {
+        if (document.activeElement.tagName === 'INPUT' ||
+            document.activeElement.tagName === 'TEXTAREA') return;
+        if (!slideEl.classList.contains('active')) return;
+        if (e.key === 'Escape')                               { e.preventDefault(); exitSlide(); }
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); revealNext(); }
+        if (e.key === 'ArrowLeft'  || e.key === 'PageUp')    { e.preventDefault(); revealPrev(); }
+    });
 
     // Tab switcher
     const _ltabs = { url: document.getElementById('l-tab-url'),
@@ -5388,83 +5532,7 @@ window.addEventListener('keydown', e => {
         });
     });
 
-    /* ════════════════════════════════════════
-       PHẦN 4: PROMPT AI GENERATOR
-    ════════════════════════════════════════ */
-    const lpSubject    = document.getElementById('lp-subject');
-    const lpTopic      = document.getElementById('lp-topic');
-    const lpSections   = document.getElementById('lp-sections');
-    const lpLang       = document.getElementById('lp-lang');
-    const lpExtra      = document.getElementById('lp-extra');
-    const lpGenBtn     = document.getElementById('lp-generate-btn');
-    const lpOut        = document.getElementById('lp-prompt-out');
-    const lpCopyBtn    = document.getElementById('lp-copy-btn');
-
-    function buildLessonPrompt() {
-        const subject  = lpSubject.value.trim()  || 'Toán học';
-        const topic    = lpTopic.value.trim()    || 'Bài học';
-        const nsec     = parseInt(lpSections.value) || 3;
-        const lang     = lpLang.value;
-        const extra    = lpExtra.value.trim();
-        const extraLine = extra ? `\n- Yêu cầu thêm: ${extra}` : '';
-
-        return `Soạn bài học "${topic}" (${subject}) bằng ${lang}. Mỗi dòng = 1 ô Google Sheet (cột A). Chia thành ${nsec} phần chính.
-
-ĐỊNH DẠNG BẮT BUỘC (dùng đúng prefix, không thêm gì khác):
-# Tên phần  → đề mục lớn (bắt đầu phần mới)
-## Tên mục  → đề mục phụ
-### Ý nhỏ   → điểm con
-> Ghi chú   → hộp ghi chú quan trọng
-| $công thức$ | → hộp hiển thị công thức toán
-dòng thường  → nội dung, dùng $LaTeX$ cho ký hiệu toán
-
-QUY TẮC:
-- Mỗi phần (# ) có ít nhất 1 mục (## ), vài dòng nội dung, ≥1 công thức
-- Công thức toán: $f(x) = ax^2+bx+c$, hộp công thức: | $\\Delta = b^2-4ac$ |
-- KHÔNG dùng Markdown (**bold**, bullet -, số thứ tự) ngoài các prefix trên
-- Chỉ xuất nội dung bài học, không giải thích, không tiêu đề phụ ngoài format${extraLine}
-
-VÍ DỤ (không copy, chỉ tham khảo format):
-# Định nghĩa
-## Khái niệm cơ bản
-Parabol là đồ thị của hàm số $f(x) = ax^2+bx+c$ với $a \\neq 0$.
-| $f(x) = ax^2 + bx + c,\\; a \\neq 0$ |
-> Nếu $a > 0$ parabol mở lên, nếu $a < 0$ parabol mở xuống.
-### Đỉnh parabol
-Đỉnh có toạ độ $\\left(-\\dfrac{b}{2a};\\, -\\dfrac{\\Delta}{4a}\\right)$.
-
----
-Bây giờ soạn bài "${topic}":`;
-    }
-
-    lpGenBtn.addEventListener('click', () => {
-        if (!lpTopic.value.trim()) { lpTopic.focus(); return; }
-        lpOut.value = buildLessonPrompt();
-        lpOut.select();
-    });
-
-    lpCopyBtn.addEventListener('click', () => {
-        const txt = lpOut.value;
-        if (!txt) { lpGenBtn.click(); return; }
-        navigator.clipboard.writeText(txt).then(() => {
-            lpCopyBtn.textContent = '✓ Đã copy!';
-            lpCopyBtn.classList.add('copied');
-            setTimeout(() => {
-                lpCopyBtn.textContent = '⧉ Copy Prompt';
-                lpCopyBtn.classList.remove('copied');
-            }, 2200);
-        }).catch(() => {
-            lpOut.select();
-            document.execCommand('copy');
-        });
-    });
-
-    // Auto-generate khi đổi topic
-    lpTopic.addEventListener('keydown', e => {
-        if (e.key === 'Enter') { e.preventDefault(); lpGenBtn.click(); }
-    });
-
-    // Fetch từ Google Sheet URL
+    // Fetch URL
     fetchBtn.addEventListener('click', async () => {
         const raw = sheetInput.value.trim();
         if (!raw) { setMsg('⚠ Chưa nhập link', '#f87171'); return; }
@@ -5477,21 +5545,72 @@ Bây giờ soạn bài "${topic}":`;
         loadFromCsvText(text);
     });
 
-    // Load từ CSV dán tay
+    // CSV paste
     csvLoadBtn.addEventListener('click', () => {
         const text = csvPaste.value.trim();
         if (!text) { setMsg('⚠ Chưa dán CSV', '#f87171'); return; }
         loadFromCsvText(text);
     });
 
-    // Phím tắt: Alt+← / Alt+→ chuyển phần
-    window.addEventListener('keydown', e => {
-        if (!panel.classList.contains('open')) return;
-        if (document.activeElement.tagName === 'INPUT' ||
-            document.activeElement.tagName === 'TEXTAREA') return;
-        if (e.altKey && e.key === 'ArrowLeft')  { e.preventDefault(); showSection(curSec - 1); }
-        if (e.altKey && e.key === 'ArrowRight') { e.preventDefault(); showSection(curSec + 1); }
+    /* ════════════════════════════════════════
+       PHẦN 5: PROMPT AI GENERATOR
+    ════════════════════════════════════════ */
+    const lpSubject  = document.getElementById('lp-subject');
+    const lpTopic    = document.getElementById('lp-topic');
+    const lpSections = document.getElementById('lp-sections');
+    const lpLang     = document.getElementById('lp-lang');
+    const lpExtra    = document.getElementById('lp-extra');
+    const lpGenBtn   = document.getElementById('lp-generate-btn');
+    const lpOut      = document.getElementById('lp-prompt-out');
+    const lpCopyBtn  = document.getElementById('lp-copy-btn');
+
+    function buildLessonPrompt() {
+        const subject = lpSubject.value.trim() || 'Toán học';
+        const topic   = lpTopic.value.trim()   || 'Bài học';
+        const nsec    = parseInt(lpSections.value) || 3;
+        const lang    = lpLang.value;
+        const extra   = lpExtra.value.trim();
+        const extraLine = extra ? `\n- Yêu cầu thêm: ${extra}` : '';
+        return `Soạn bài học "${topic}" (${subject}) bằng ${lang}. Mỗi dòng = 1 ô Google Sheet cột A. Chia thành ${nsec} phần chính.
+
+ĐỊNH DẠNG BẮT BUỘC:
+# Tên phần  → đề mục lớn (bắt đầu phần mới)
+## Tên mục  → đề mục phụ
+### Ý nhỏ   → điểm con
+> Ghi chú   → hộp ghi chú
+| $công thức$ | → hộp công thức
+dòng thường  → nội dung ($LaTeX$ inline)
+
+QUY TẮC: mỗi phần có ≥1 mục, vài dòng, ≥1 công thức. KHÔNG dùng **, -, 1. ngoài prefix trên. Chỉ xuất nội dung, không giải thích.${extraLine}
+
+VÍ DỤ format:
+# Định nghĩa
+## Khái niệm
+Hàm số $f(x) = ax^2+bx+c$, $a \\neq 0$.
+| $f(x) = ax^2+bx+c$ |
+> $a>0$ mở lên, $a<0$ mở xuống.
+### Đỉnh
+Toạ độ đỉnh: $\\left(-\\tfrac{b}{2a};\\,-\\tfrac{\\Delta}{4a}\\right)$.
+
+---
+Soạn bài "${topic}":`;
+    }
+
+    lpGenBtn.addEventListener('click', () => {
+        if (!lpTopic.value.trim()) { lpTopic.focus(); return; }
+        lpOut.value = buildLessonPrompt();
+        lpOut.select();
     });
+    lpCopyBtn.addEventListener('click', () => {
+        const txt = lpOut.value;
+        if (!txt) { lpGenBtn.click(); return; }
+        navigator.clipboard.writeText(txt).then(() => {
+            lpCopyBtn.textContent = '✓ Đã copy!';
+            lpCopyBtn.classList.add('copied');
+            setTimeout(() => { lpCopyBtn.textContent = '⧉ Copy Prompt'; lpCopyBtn.classList.remove('copied'); }, 2200);
+        }).catch(() => { lpOut.select(); document.execCommand('copy'); });
+    });
+    lpTopic.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); lpGenBtn.click(); } });
 
 })();
 
