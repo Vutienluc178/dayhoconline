@@ -1771,17 +1771,17 @@ canvas { touch-action: none; -ms-touch-action: none; }
     <!-- Text mode sub-bar — hiện khi chọn công cụ Chữ -->
     <div id="text-mode-bar">
         <div class="tm-label">CHẾ ĐỘ CHỮ</div>
-        <button class="tm-btn active" data-mode="body" data-tip="Văn bản — Enter xuống dòng, Esc xong">
+        <button class="tm-btn active" data-mode="body" data-tip="Phím 1 · Enter xuống dòng · Esc xong">
             <span class="tm-icon" style="font-size:10px;font-weight:600">A</span>
-            <span class="tm-label-text">Văn bản</span>
+            <span class="tm-label-text">Văn bản <kbd style="font-size:8px;opacity:.55;font-style:normal">1</kbd></span>
         </button>
-        <button class="tm-btn" data-mode="heading" data-tip="Tiêu đề mục — Enter xuống dòng, Esc xong">
+        <button class="tm-btn" data-mode="heading" data-tip="Phím 2 · Enter xuống dòng · Esc xong">
             <span class="tm-icon" style="font-size:13px;font-weight:700">A</span>
-            <span class="tm-label-text">Tiêu đề mục</span>
+            <span class="tm-label-text">Đề mục <kbd style="font-size:8px;opacity:.55;font-style:normal">2</kbd></span>
         </button>
-        <button class="tm-btn" data-mode="title" data-tip="Tiêu đề bài học — Enter xuống dòng, Esc xong">
+        <button class="tm-btn" data-mode="title" data-tip="Phím 3 · Enter xuống dòng · Esc xong">
             <span class="tm-icon" style="font-size:16px;font-weight:800">A</span>
-            <span class="tm-label-text">Bài học</span>
+            <span class="tm-label-text">Bài học <kbd style="font-size:8px;opacity:.55;font-style:normal">3</kbd></span>
         </button>
     </div>
 
@@ -4631,12 +4631,28 @@ window.addEventListener('keydown', e => {
         }
     }
 
+    // Kiểm tra đang gõ văn bản (contenteditable / input / textarea)
+    const activeTag = document.activeElement && document.activeElement.tagName;
+    const isTypingNow = activeTag === 'INPUT' || activeTag === 'TEXTAREA'
+                     || document.activeElement.isContentEditable
+                     || (textInput && document.contains(textInput));
+
     // Quick-access tool keys  (g = đa giác tô màu, thay cho f cũ)
-    const km = {p:'pen', e:'eraser', t:'text', h:'highlight', m:'model-select', g:'poly-fill'};
-    if (!e.ctrlKey && !e.metaKey && km[e.key]) {
-        commitCurve(); commitArc(); abortPolyFill(); abortProtractor();
-        state.tool = (state.tool === km[e.key] && e.key==='m') ? 'pen' : km[e.key];
-        closeAllPanels(); updateUI();
+    if (!isTypingNow && !e.ctrlKey && !e.metaKey) {
+        const km = {p:'pen', e:'eraser', t:'text', h:'highlight', m:'model-select', g:'poly-fill'};
+        if (km[e.key]) {
+            commitCurve(); commitArc(); abortPolyFill(); abortProtractor();
+            state.tool = (state.tool === km[e.key] && e.key==='m') ? 'pen' : km[e.key];
+            closeAllPanels(); updateUI();
+        }
+        // 1 = Văn bản, 2 = Tiêu đề mục, 3 = Tiêu đề bài học
+        if (e.key === '1' || e.key === '2' || e.key === '3') {
+            const modeMap = { '1': 'body', '2': 'heading', '3': 'title' };
+            commitCurve(); commitArc(); abortPolyFill(); abortProtractor();
+            state.tool = 'text';
+            state.textMode = modeMap[e.key];
+            closeAllPanels(); updateUI();
+        }
     }
 });
 
