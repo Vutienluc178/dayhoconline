@@ -1036,6 +1036,26 @@ html, body {
 }
 .tb[data-tip]:hover::after, .sb[data-tip]:hover::after { opacity: 1; }
 
+/* ── Text mode sub-bar ── */
+#text-mode-bar { display:none; flex-direction:column; gap:2px; margin-top:5px; }
+#text-mode-bar.show { display:flex; }
+.tm-label {
+    font-size:8px; font-weight:700; letter-spacing:.14em;
+    color:rgba(148,163,184,.38); text-align:center; padding:1px 0 2px;
+}
+.tm-btn {
+    width:100%; height:27px; border-radius:7px;
+    border:1px solid rgba(255,255,255,.06);
+    background:rgba(255,255,255,.03); color:rgba(148,163,184,.62);
+    cursor:pointer; letter-spacing:.01em;
+    display:flex; align-items:center; gap:7px; padding:0 8px;
+    transition:background .12s,color .12s; outline:none; flex-shrink:0;
+}
+.tm-btn:hover { background:rgba(255,255,255,.09); color:#f1f5f9; }
+.tm-btn.active { background:rgba(99,102,241,.18); color:#a5b4fc; border-color:rgba(99,102,241,.28); }
+.tm-icon { display:inline-block; font-style:normal; line-height:1; min-width:16px; text-align:center; flex-shrink:0; }
+.tm-label-text { font-size:9.5px; font-weight:600; white-space:nowrap; }
+
 /* Single-wide button (full row) */
 .tb-full {
     width: 100%;
@@ -1174,20 +1194,28 @@ html, body {
 }
 .pt-input:focus { box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 0 0 3px currentColor; }
 
-/* Canvas text input (improved) */
+/* Canvas text input (multi-line contenteditable) */
 .canvas-text-input {
     position: absolute;
     z-index: 200;
     outline: none;
     background: rgba(255,255,255,0.94);
     border-radius: 7px;
-    padding: 4px 10px;
-    box-shadow: 0 3px 16px rgba(0,0,0,0.22);
-    font-family: 'Times New Roman', Georgia, serif;
-    font-weight: bold;
-    min-width: 90px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-width: 180px;
+    max-width: calc(100% - 120px);
+    line-height: 1.35;
+    cursor: text;
+    padding: 6px 12px;
+    box-shadow: 0 3px 20px rgba(0,0,0,0.22);
 }
-.canvas-text-input:focus { box-shadow: 0 4px 22px rgba(0,0,0,0.30); }
+.canvas-text-input:focus { box-shadow: 0 4px 24px rgba(0,0,0,0.30); }
+.canvas-text-input:empty::before {
+    content: attr(data-placeholder);
+    color: rgba(0,0,0,.28); pointer-events: none;
+    font-style: italic;
+}
 
 /* Stamp picker popup */
 #stamp-popup {
@@ -1739,6 +1767,23 @@ canvas { touch-action: none; -ms-touch-action: none; }
     <button class="tb-full snap-on" id="btn-snap-line" data-tip="Tự nhận dạng đoạn thẳng (bật/tắt)" style="margin-top:3px">
         <i data-lucide="ruler"></i> Nhận dạng
     </button>
+
+    <!-- Text mode sub-bar — hiện khi chọn công cụ Chữ -->
+    <div id="text-mode-bar">
+        <div class="tm-label">CHẾ ĐỘ CHỮ</div>
+        <button class="tm-btn active" data-mode="body" data-tip="Văn bản — Enter xuống dòng, Esc xong">
+            <span class="tm-icon" style="font-size:10px;font-weight:600">A</span>
+            <span class="tm-label-text">Văn bản</span>
+        </button>
+        <button class="tm-btn" data-mode="heading" data-tip="Tiêu đề mục — Enter xuống dòng, Esc xong">
+            <span class="tm-icon" style="font-size:13px;font-weight:700">A</span>
+            <span class="tm-label-text">Tiêu đề mục</span>
+        </button>
+        <button class="tm-btn" data-mode="title" data-tip="Tiêu đề bài học — Enter xuống dòng, Esc xong">
+            <span class="tm-icon" style="font-size:16px;font-weight:800">A</span>
+            <span class="tm-label-text">Bài học</span>
+        </button>
+    </div>
 
     <div class="s-div"></div>
 
@@ -2292,6 +2337,7 @@ const state = {
     curveStage: 0,
     history: [], historyStep: -1,
     stampChar: '✓',
+    textMode: 'body',
     pointLabelIndex: 0,
     spotlight: false,
     penType: 'calligraphy',
@@ -2420,6 +2466,9 @@ function updateUI() {
     document.querySelectorAll('.cb').forEach(b => b.classList.toggle('active', b.dataset.color === state.color));
     // Size
     document.querySelectorAll('.sb').forEach(b => b.classList.toggle('active', +b.dataset.size === state.lineWidth));
+    // Text mode bar
+    document.getElementById('text-mode-bar').classList.toggle('show', state.tool === 'text');
+    document.querySelectorAll('.tm-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.textMode));
     // Background
     applyBackground(state.background);
     oxyLayer.classList.toggle('hidden', state.background !== 'oxy');
@@ -3104,6 +3153,16 @@ document.getElementById('btn-snap-line').addEventListener('click', () => {
 });
 
 /* ─────────────────────────────────────────────
+   TEXT MODE BUTTONS
+───────────────────────────────────────────── */
+document.querySelectorAll('.tm-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        state.textMode = btn.dataset.mode;
+        document.querySelectorAll('.tm-btn').forEach(b => b.classList.toggle('active', b === btn));
+    });
+});
+
+/* ─────────────────────────────────────────────
    PEN TYPES PANEL
 ───────────────────────────────────────────── */
 const penTypesPanel = document.getElementById('pen-types-panel');
@@ -3443,44 +3502,105 @@ function getXY(e) {
 /* ─────────────────────────────────────────────
    TEXT INPUT
 ───────────────────────────────────────────── */
+/* Trả về cấu hình font theo text mode */
+function getTextStyle(mode, lineWidth) {
+    if (mode === 'title') {
+        return { fs: 58, lh: 1.22, font: `800 58px Georgia,'Times New Roman',serif`,
+                 placeholder: 'Tiêu đề bài học...', border: '3px solid',
+                 shadow: 'rgba(255,255,255,.9)', shadowBlur: 8, underline: true };
+    }
+    if (mode === 'heading') {
+        return { fs: 54, lh: 1.28, font: `700 italic 54px 'Times New Roman',Georgia,serif`,
+                 placeholder: 'Tiêu đề mục...', border: '2px dashed',
+                 shadow: 'rgba(255,255,255,.85)', shadowBlur: 5, underline: false };
+    }
+    // body — lớn hơn, dễ đọc
+    const fs = Math.max(38, lineWidth * 4 + 24);
+    return { fs, lh: 1.38, font: `600 ${fs}px 'Segoe UI',Arial,sans-serif`,
+             placeholder: 'Nhập văn bản...', border: '2px solid',
+             shadow: 'rgba(255,255,255,.8)', shadowBlur: 4, underline: false };
+}
+
 function createText(cx, cy, clientX, clientY) {
     if (textInput) finalizeText();
-    textInput = document.createElement('input');
-    textInput.type = 'text';
+    // Dùng div contenteditable để hỗ trợ xuống dòng tự nhiên
+    textInput = document.createElement('div');
+    textInput.contentEditable = 'true';
     textInput.className = 'canvas-text-input';
     const boardR = board.getBoundingClientRect();
-    const fs = Math.max(26, state.lineWidth * 4 + 16);
+    const ts = getTextStyle(state.textMode, state.lineWidth);
+    const fs = ts.fs;
     textInput.style.cssText = `
         left:${clientX - boardR.left}px;
-        top:${clientY - boardR.top - fs * 0.6}px;
+        top:${clientY - boardR.top - fs * 0.55}px;
         font-size:${fs}px;
+        font:${ts.font};
         color:${state.color};
-        border:2px solid ${state.color};
+        border:${ts.border} ${state.color};
     `;
-    textInput.placeholder = 'Nhập văn bản...';
-    board.appendChild(textInput);
-    setTimeout(() => textInput.focus(), 40);
+    // Placeholder giả bằng data-attribute + CSS
+    textInput.dataset.placeholder = ts.placeholder;
     textInput.dataset.cx = cx;
     textInput.dataset.cy = cy;
     textInput.dataset.fs = fs;
-    textInput.addEventListener('keydown', e => { if (e.key === 'Enter') finalizeText(); });
-    textInput.addEventListener('blur', () => { setTimeout(finalizeText, 80); });
+    textInput.dataset.mode = state.textMode;
+    board.appendChild(textInput);
+    setTimeout(() => { textInput.focus(); placeCursorAtEnd(textInput); }, 40);
+    // Enter = xuống dòng (mặc định với contenteditable — không chặn)
+    // Escape = commit
+    textInput.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { e.preventDefault(); finalizeText(); }
+    });
+    textInput.addEventListener('blur', () => { setTimeout(finalizeText, 100); });
 }
+
+function placeCursorAtEnd(el) {
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
 function finalizeText() {
     if (!textInput) return;
     const inp = textInput;
     textInput = null;
-    const v = inp.value.trim();
+    // Lấy text đa dòng, thay <br> thành \n
+    const raw = inp.innerHTML
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<div>/gi, '\n')
+        .replace(/<\/div>/gi, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/<[^>]+>/g, '');
+    const v = raw.replace(/^\n+|\n+$/g, ''); // trim đầu cuối
     if (v) {
-        const fs = parseFloat(inp.dataset.fs) || 26;
+        const mode = inp.dataset.mode || 'body';
+        const ts = getTextStyle(mode, state.lineWidth);
+        const cx = +inp.dataset.cx, cy = +inp.dataset.cy;
+        const lines = v.split('\n');
+        const lineH = ts.fs * ts.lh;
         ctx.save();
         ctx.globalCompositeOperation = 'source-over';
-        ctx.font = `bold ${fs}px 'Times New Roman', Georgia, serif`;
+        ctx.font = ts.font;
         ctx.fillStyle = state.color;
-        ctx.textBaseline = 'middle';
-        ctx.shadowColor = 'rgba(255,255,255,0.85)';
-        ctx.shadowBlur = 5;
-        ctx.fillText(v, +inp.dataset.cx, +inp.dataset.cy);
+        ctx.textBaseline = 'top';
+        ctx.shadowColor = ts.shadow;
+        ctx.shadowBlur = ts.shadowBlur;
+        lines.forEach((line, i) => {
+            ctx.fillText(line, cx, cy + i * lineH);
+        });
+        // Tiêu đề bài học: gạch chân dưới dòng đầu
+        if (ts.underline && lines[0]) {
+            const w = ctx.measureText(lines[0]).width;
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = state.color;
+            ctx.lineWidth = 2.5;
+            ctx.globalAlpha = 0.5;
+            const uy = cy + ts.fs * 1.08;
+            ctx.beginPath(); ctx.moveTo(cx, uy); ctx.lineTo(cx + w, uy); ctx.stroke();
+        }
         ctx.restore();
         saveState();
     }
@@ -4500,11 +4620,15 @@ window.addEventListener('keydown', e => {
     if ((e.ctrlKey||e.metaKey) && e.key==='y') { e.preventDefault(); redo(); }
     if (e.key==='Escape') { commitCurve(); commitArc(); abortPolyFill(); abortProtractor(); closeAllPanels(); }
 
-    // F / f = Fullscreen toggle (gọi cùng nút btnFS để đồng bộ icon)
+    // F / f = Fullscreen toggle — chỉ khi không đang gõ văn bản
     if (!e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 'f') {
-        e.preventDefault();
-        document.getElementById('btn-fullscreen') && document.getElementById('btn-fullscreen').click();
-        return;
+        const tag = document.activeElement && document.activeElement.tagName;
+        const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable || (textInput && document.contains(textInput));
+        if (!isTyping) {
+            e.preventDefault();
+            document.getElementById('btn-fullscreen') && document.getElementById('btn-fullscreen').click();
+            return;
+        }
     }
 
     // Quick-access tool keys  (g = đa giác tô màu, thay cho f cũ)
