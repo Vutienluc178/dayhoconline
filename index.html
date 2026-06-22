@@ -808,17 +808,45 @@ html, body {
 ══════════════════════════════════════════════════════ */
 .bg-plain { background-color: #fff; }
 
-.bg-grid, .bg-oxy {
+.bg-grid {
     background-color: #fff;
     background-image:
         linear-gradient(to right, #d1d5db 1px, transparent 1px),
         linear-gradient(to bottom, #d1d5db 1px, transparent 1px);
     background-size: 40px 40px;
 }
+/* Split board: trái = Công thức (lavender) | phải = Ví dụ (mint) */
+.bg-oxy {
+    background:
+        linear-gradient(to right,
+            transparent calc(50% - 0.5px),
+            rgba(130,140,165,.28) calc(50% - 0.5px),
+            rgba(130,140,165,.28) calc(50% + 0.5px),
+            transparent calc(50% + 0.5px)
+        ),
+        linear-gradient(to right, #eceffc 50%, #edf9f4 50%);
+}
+/* Left half dots — indigo */
+#board.bg-oxy::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 50%; bottom: 0;
+    background-image: radial-gradient(circle, rgba(99,102,241,.19) 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+    pointer-events: none; z-index: 0;
+}
+/* Right half dots — teal (offset ½ pitch) */
+#board.bg-oxy::after {
+    content: '';
+    position: absolute; top: 0; left: 50%; right: 0; bottom: 0;
+    background-image: radial-gradient(circle, rgba(16,185,129,.16) 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+    background-position: 12px 12px;
+    pointer-events: none; z-index: 0;
+}
 /* Dot grid */
 .bg-dots {
     background-color: #f9fafb;
-    background-image: radial-gradient(circle, #94a3b8 1.4px, transparent 1.4px);
+    background-image: radial-gradient(circle, rgba(148,163,184,.3) 1.4px, transparent 1.4px);
     background-size: 24px 24px;
 }
 /* Lined paper */
@@ -837,8 +865,12 @@ html, body {
         linear-gradient(225deg, rgba(0,0,0,.015) 25%, transparent 25%);
     background-size: 4px 4px;
 }
-/* Black / dark */
-.bg-dark { background-color: #0f172a; }
+/* Black / dark — chấm mờ căn hàng */
+.bg-dark {
+    background-color: #0f172a;
+    background-image: radial-gradient(circle, rgba(255,255,255,.10) 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+}
 /* Chalkboard green */
 .bg-chalkboard {
     background-color: #1e3d2b;
@@ -888,7 +920,7 @@ html, body {
 /* Swatch mini-backgrounds (scaled-down version of actual bg) */
 .bg-sw[data-bg="plain"]      { background-color: #fff; }
 .bg-sw[data-bg="grid"]       { background-color:#fff; background-image:linear-gradient(to right,#d1d5db 1px,transparent 1px),linear-gradient(to bottom,#d1d5db 1px,transparent 1px); background-size:6px 6px; }
-.bg-sw[data-bg="oxy"]        { background-color:#fff; background-image:linear-gradient(to right,#d1d5db 1px,transparent 1px),linear-gradient(to bottom,#d1d5db 1px,transparent 1px),linear-gradient(to right,transparent calc(50% - 0.5px),#9ca3af calc(50% - 0.5px),#9ca3af calc(50%+0.5px),transparent calc(50%+0.5px)),linear-gradient(to bottom,transparent calc(50%-0.5px),#9ca3af calc(50%-0.5px),#9ca3af calc(50%+0.5px),transparent calc(50%+0.5px)); background-size:6px 6px,6px 6px,100% 100%,100% 100%; }
+.bg-sw[data-bg="oxy"]        { background: linear-gradient(to right, #dde2f5 49%, rgba(130,140,165,.55) 49%, rgba(130,140,165,.55) 51%, #dcf4ea 51%); }
 .bg-sw[data-bg="dots"]       { background-color:#f9fafb; background-image:radial-gradient(circle,#94a3b8 1px,transparent 1px); background-size:5px 5px; }
 .bg-sw[data-bg="lined"]      { background-color:#fefce8; background-image:linear-gradient(to bottom,transparent 4px,#93c5fd 4px,#93c5fd 5px,transparent 5px); background-size:100% 5px; }
 .bg-sw[data-bg="paper"]      { background-color:#fdf6e3; }
@@ -1623,13 +1655,28 @@ canvas { touch-action: none; -ms-touch-action: none; }
     display: flex; align-items: center; justify-content: center;
 }
 #oxy-layer.hidden { display: none; }
-.oxy-x { position: absolute; width: 100%; height: 2px; background: #9ca3af; }
-.oxy-y { position: absolute; height: 100%; width: 2px; background: #9ca3af; }
+.oxy-x { position: absolute; width: 100%; height: 1.5px; background: linear-gradient(to right, rgba(99,102,241,.45) 50%, rgba(16,185,129,.45) 50%); }
+.oxy-y { position: absolute; height: 100%; width: 1.5px; background: linear-gradient(to bottom, rgba(99,102,241,.6) 50%, rgba(99,102,241,.3) 50%); left: 50%; margin-left: -0.75px; }
 .oxy-ax { position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-    border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 13px solid #6b7280; }
+    border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 12px solid rgba(16,185,129,.6); }
 .oxy-ay { position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 13px solid #6b7280; }
-.oxy-lbl { position: absolute; color: #6b7280; font-weight: 700; font-style: italic; font-size: 17px; }
+    border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 12px solid rgba(99,102,241,.7); }
+.oxy-lbl { position: absolute; font-weight: 700; font-style: italic; font-size: 16px; }
+/* Panel watermark labels */
+.oxy-panel-label {
+    position: absolute; top: 22px;
+    font-size: 9.5px; font-weight: 800; letter-spacing: 4.5px; font-style: normal;
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    pointer-events: none;
+}
+.oxy-panel-label::before {
+    content: ''; display: block;
+    width: 28px; height: 2px; border-radius: 2px;
+}
+.oxy-label-left  { left: 0; right: 50%; text-align: center; color: rgba(99,102,241,.22); }
+.oxy-label-right { left: 50%; right: 0; text-align: center; color: rgba(16,185,129,.2); }
+.oxy-label-left::before  { background: rgba(99,102,241,.38); }
+.oxy-label-right::before { background: rgba(16,185,129,.38); }
 </style>
 </head>
 <body>
@@ -1761,7 +1808,7 @@ canvas { touch-action: none; -ms-touch-action: none; }
         <button class="cb active" style="background:#1e1e8a" data-color="#1e1e8a" data-tip="Xanh đậm"></button>
         <button class="cb" style="background:#dc2626" data-color="#dc2626" data-tip="Đỏ"></button>
         <button class="cb" style="background:#ea580c" data-color="#ea580c" data-tip="Cam"></button>
-        <button class="cb" style="background:#ca8a04" data-color="#ca8a04" data-tip="Vàng"></button>
+        <button class="cb" style="background:#f5c518" data-color="#f5c518" data-tip="Phấn vàng"></button>
         <button class="cb" style="background:#65a30d" data-color="#65a30d" data-tip="Lá cây"></button>
         <button class="cb" style="background:#16a34a" data-color="#16a34a" data-tip="Xanh lá"></button>
         <button class="cb" style="background:#7c3aed" data-color="#7c3aed" data-tip="Tím"></button>
@@ -2079,13 +2126,9 @@ canvas { touch-action: none; -ms-touch-action: none; }
 
     <!-- Oxy layer -->
     <div id="oxy-layer" class="hidden">
-        <div class="oxy-x"></div>
-        <div class="oxy-y"></div>
-        <div class="oxy-ax"></div>
-        <div class="oxy-ay"></div>
-        <span class="oxy-lbl" style="right:18px;top:50%;margin-top:9px">x</span>
-        <span class="oxy-lbl" style="top:8px;left:50%;margin-left:11px">y</span>
-        <span class="oxy-lbl" style="top:50%;left:50%;margin-top:7px;margin-left:9px">O</span>
+        <!-- Watermark panel labels -->
+        <div class="oxy-panel-label oxy-label-left">CÔNG THỨC</div>
+        <div class="oxy-panel-label oxy-label-right">VÍ DỤ MẪU</div>
     </div>
 
     <!-- Snap-to-line toast -->
