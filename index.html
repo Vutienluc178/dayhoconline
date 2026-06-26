@@ -1783,6 +1783,10 @@ canvas { touch-action: none; -ms-touch-action: none; }
             <span class="tm-icon" style="font-size:16px;font-weight:800">A</span>
             <span class="tm-label-text">Bài học <kbd style="font-size:8px;opacity:.55;font-style:normal">3</kbd></span>
         </button>
+        <button class="tm-btn" data-mode="huge" data-tip="Phím 4 · Chữ siêu to 88px · Esc xong">
+            <span class="tm-icon" style="font-size:19px;font-weight:900;color:#f59e0b">A</span>
+            <span class="tm-label-text">Chữ đại <kbd style="font-size:8px;opacity:.55;font-style:normal">4</kbd></span>
+        </button>
     </div>
 
     <div class="s-div"></div>
@@ -1826,6 +1830,56 @@ canvas { touch-action: none; -ms-touch-action: none; }
             <span id="pt-badge">A</span>
         </button>
         <button class="tb" data-tool="seg-tick"     data-tip="Dấu tích đoạn thẳng"><i data-lucide="align-center"></i></button>
+    </div>
+
+    <div class="s-div"></div>
+
+    <!-- ── HÌNH HỌC DỰNG ── -->
+    <div style="font-size:8px;font-weight:700;letter-spacing:.12em;color:rgba(148,163,184,.38);text-align:center;padding:2px 0 3px">DỰNG HÌNH</div>
+    <div class="s-grid">
+        <button class="tb acc-teal" data-tool="geo-midpoint" data-tip="Trung điểm đoạn thẳng — Click A → Click B">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/>
+                <line x1="2" y1="9" x2="2" y2="15"/><line x1="22" y1="9" x2="22" y2="15"/>
+            </svg>
+        </button>
+        <button class="tb acc-violet" data-tool="geo-circ3" data-tip="Đường tròn qua 3 điểm — Click A → B → C">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="8"/>
+                <circle cx="6" cy="16" r="1.5" fill="currentColor" stroke="none"/>
+                <circle cx="18" cy="16" r="1.5" fill="currentColor" stroke="none"/>
+                <circle cx="12" cy="4" r="1.5" fill="currentColor" stroke="none"/>
+            </svg>
+        </button>
+        <button class="tb acc-yellow" data-tool="geo-thales" data-tip="Tam giác vuông Thales — Click cạnh huyền A→B → Click đỉnh góc vuông">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M3 20 L21 20 L12 4 Z"/>
+                <rect x="12" y="17" width="3" height="3" fill="none"/>
+            </svg>
+        </button>
+        <button class="tb acc-teal" data-tool="geo-perp-bisect" data-tip="Đường trung trực — Click A → Click B">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="4" y1="12" x2="20" y2="12"/>
+                <line x1="12" y1="3" x2="12" y2="21"/>
+                <rect x="10" y="10" width="4" height="4" fill="none" stroke-width="1.5"/>
+            </svg>
+        </button>
+        <button class="tb acc-violet" data-tool="geo-altitude" data-tip="Đường cao tam giác — Click đỉnh C → Click A → Click B (cạnh đáy)">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M4 20 L20 20 L12 4 Z"/>
+                <line x1="12" y1="4" x2="12" y2="20" stroke-dasharray="3,2"/>
+                <rect x="9" y="17" width="3" height="3" fill="none" stroke-width="1.5"/>
+            </svg>
+        </button>
+        <button class="tb" data-tool="geo-bisector" data-tip="Đường phân giác — Click đỉnh góc → Click cạnh 1 → Click cạnh 2">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="12" y1="20" x2="4"  y2="4"/>
+                <line x1="12" y1="20" x2="20" y2="4"/>
+                <line x1="12" y1="20" x2="12" y2="4" stroke-dasharray="3,2"/>
+                <path d="M10 14 A3 3 0 0 1 14 14" stroke-width="1.5"/>
+            </svg>
+        </button>
     </div>
 
     <!-- Polygon fill button -->
@@ -1972,16 +2026,28 @@ canvas { touch-action: none; -ms-touch-action: none; }
 
 <!-- ═══════════════════  SHEET INPUT PANEL  ═══════════════════ -->
 <div id="q-sheet-panel">
-    <h4>📋 Tải câu hỏi từ Google Sheet</h4>
+    <h4>📋 Nhập câu hỏi</h4>
 
     <!-- Tab switcher -->
-    <div id="q-tab-bar" style="display:flex;gap:6px;margin-bottom:10px;">
-        <button class="q-tab active" data-tab="url">🔗 Link URL</button>
-        <button class="q-tab"        data-tab="csv">📄 Dán CSV</button>
+    <div id="q-tab-bar" style="display:flex;gap:5px;margin-bottom:10px;">
+        <button class="q-tab active" data-tab="manual">✏ Nhập tay</button>
+        <button class="q-tab"        data-tab="url">🔗 Link Sheet</button>
+        <button class="q-tab"        data-tab="csv">📄 CSV</button>
+    </div>
+
+    <!-- Tab: Nhập tay -->
+    <div id="q-tab-manual">
+        <div style="font-size:10.5px;color:#64748b;line-height:1.55;margin-bottom:8px;padding:7px 9px;background:rgba(52,211,153,.07);border-radius:7px;border-left:2px solid #34d399">
+            💡 Mỗi dòng là <b style="color:#6ee7b7">1 câu hỏi</b>. Hỗ trợ LaTeX <b style="color:#94a3b8">$...$</b>. Dòng trống sẽ bị bỏ qua.
+        </div>
+        <textarea id="q-manual-input" rows="7"
+            placeholder="Ví dụ:&#10;Tính diện tích hình tròn bán kính $r = 5$.&#10;Giải phương trình $x^2 - 5x + 6 = 0$.&#10;Tìm $x$ biết $2x + 3 = 11$."
+            style="width:100%;padding:8px 10px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.09);border-radius:9px;color:#f1f5f9;font-size:11.5px;font-family:inherit;resize:vertical;outline:none;margin-bottom:8px;line-height:1.6;box-sizing:border-box;"></textarea>
+        <button id="q-manual-load-btn" style="width:100%;padding:8px;background:rgba(52,211,153,.18);border:1.5px solid rgba(52,211,153,.35);border-radius:9px;color:#34d399;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s;">✅ Nạp câu hỏi</button>
     </div>
 
     <!-- Tab: URL -->
-    <div id="q-tab-url">
+    <div id="q-tab-url" style="display:none;">
         <div style="font-size:10.5px;color:#64748b;line-height:1.55;margin-bottom:10px;padding:7px 9px;background:rgba(99,102,241,.07);border-radius:7px;border-left:2px solid #6366f1">
             💡 <b style="color:#a5b4fc">Sheet phải "Publish to web":</b><br>
             File → Share → <b style="color:#94a3b8">Publish to web</b>
@@ -2347,6 +2413,8 @@ const state = {
     arcStage: 0, arcVertex: null, arcP1: null,
     // protractor: thước đo độ thông minh
     protractorStage: 0, protractorO: null, protractorA: null,
+    // geometric construction tools (shared stage)
+    geoStage: 0, geoA: null, geoB: null,
 };
 
 // Point-label editable input state
@@ -2529,6 +2597,12 @@ function commitArc() {
     if (state.tool === 'angle-arc' && state.arcStage > 0) {
         state.arcStage = 0; state.arcVertex = state.arcP1 = null;
         tmpCtx.clearRect(0,0,tmpCanvas.width,tmpCanvas.height);
+    }
+}
+function commitGeo() {
+    if (state.geoStage > 0) {
+        state.geoStage = 0; state.geoA = state.geoB = null;
+        tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
     }
 }
 function abortProtractor() {
@@ -2751,7 +2825,7 @@ function applyStroke(fn) {
 document.querySelectorAll('.tb[data-tool]').forEach(btn => {
     btn.addEventListener('click', () => {
         if (btn.dataset.tool === 'stamp') return; // handled by stamp popup separately
-        commitCurve(); commitArc(); abortPolyFill(); abortProtractor();
+        commitCurve(); commitArc(); abortPolyFill(); abortProtractor(); commitGeo();
         state.tool = btn.dataset.tool;
         closeAllPanels();
         updateUI();
@@ -2791,7 +2865,7 @@ document.getElementById('btn-shapes').addEventListener('click', (e) => {
 });
 document.querySelectorAll('.si').forEach(item => {
     item.addEventListener('click', () => {
-        commitCurve(); commitArc(); abortPolyFill(); abortProtractor();
+        commitCurve(); commitArc(); abortPolyFill(); abortProtractor(); commitGeo();
         state.tool = item.dataset.shape;
         shapePanel.classList.remove('open');
         updateUI();
@@ -3187,7 +3261,7 @@ document.querySelectorAll('.pt-card').forEach(card => {
         e.stopPropagation();
         state.penType = card.dataset.pen;
         // Switch to pen tool automatically
-        commitCurve(); commitArc(); abortPolyFill(); abortProtractor();
+        commitCurve(); commitArc(); abortPolyFill(); abortProtractor(); commitGeo();
         state.tool = 'pen';
         penTypesPanel.classList.remove('open');
         updateUI();
@@ -3504,6 +3578,11 @@ function getXY(e) {
 ───────────────────────────────────────────── */
 /* Trả về cấu hình font theo text mode */
 function getTextStyle(mode, lineWidth) {
+    if (mode === 'huge') {
+        return { fs: 88, lh: 1.18, font: `900 88px Georgia,'Times New Roman',serif`,
+                 placeholder: 'Chữ đại...', border: '4px solid',
+                 shadow: 'rgba(255,255,255,.95)', shadowBlur: 12, underline: false };
+    }
     if (mode === 'title') {
         return { fs: 58, lh: 1.22, font: `800 58px Georgia,'Times New Roman',serif`,
                  placeholder: 'Tiêu đề bài học...', border: '3px solid',
@@ -3754,6 +3833,285 @@ function handleStart(e) {
         return;
     }
 
+    /* ═══ DỰNG HÌNH ═══ */
+
+    /* Helpers */
+    function gDot(c, px, py, r = 4) {
+        c.beginPath(); c.arc(px, py, r, 0, Math.PI * 2); c.fill();
+    }
+    function gLabel(c, txt, px, py, ox = 8, oy = -10) {
+        c.save(); c.font = `bold ${Math.max(13, state.lineWidth * 2 + 10)}px 'Times New Roman',serif`;
+        c.fillText(txt, px + ox, py + oy); c.restore();
+    }
+    function circumcenter(A, B, C) {
+        const D = 2*(A.x*(B.y-C.y) + B.x*(C.y-A.y) + C.x*(A.y-B.y));
+        if (Math.abs(D) < 1e-9) return null;
+        const ux = ((A.x*A.x+A.y*A.y)*(B.y-C.y) + (B.x*B.x+B.y*B.y)*(C.y-A.y) + (C.x*C.x+C.y*C.y)*(A.y-B.y)) / D;
+        const uy = ((A.x*A.x+A.y*A.y)*(C.x-B.x) + (B.x*B.x+B.y*B.y)*(A.x-C.x) + (C.x*C.x+C.y*C.y)*(B.x-A.x)) / D;
+        return {x: ux, y: uy};
+    }
+    function snapToCircle(O, r, P) {
+        const d = Math.hypot(P.x - O.x, P.y - O.y);
+        if (d < 1) return {x: O.x + r, y: O.y};
+        return {x: O.x + r * (P.x - O.x) / d, y: O.y + r * (P.y - O.y) / d};
+    }
+    function drawRightAngleMark(c, V, sA, sB, sz = 13) {
+        const a = Math.atan2(sA.y - V.y, sA.x - V.x);
+        const b = Math.atan2(sB.y - V.y, sB.x - V.x);
+        const p1 = {x: V.x + sz*Math.cos(a), y: V.y + sz*Math.sin(a)};
+        const p2 = {x: V.x + sz*Math.cos(b), y: V.y + sz*Math.sin(b)};
+        const p3 = {x: p1.x + sz*Math.cos(b), y: p1.y + sz*Math.sin(b)};
+        c.beginPath(); c.moveTo(p1.x, p1.y); c.lineTo(p3.x, p3.y); c.lineTo(p2.x, p2.y); c.stroke();
+    }
+
+    /* Trung điểm — 2 clicks */
+    if (state.tool === 'geo-midpoint') {
+        if (state.geoStage === 0) {
+            state.geoA = {x, y}; state.geoStage = 1;
+            tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+            tmpCtx.fillStyle = state.color;
+            gDot(tmpCtx, x, y, 4);
+            showToast('⊙ Click điểm B để xác định đoạn thẳng');
+        } else {
+            const A = state.geoA, B = {x, y};
+            const M = {x: (A.x+B.x)/2, y: (A.y+B.y)/2};
+            tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+            ctx.save();
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = state.color; ctx.lineWidth = state.lineWidth;
+            ctx.lineCap = 'round'; ctx.setLineDash([]);
+            ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+            ctx.fillStyle = state.color;
+            gDot(ctx, A.x, A.y, 4);
+            gDot(ctx, B.x, B.y, 4);
+            // Trung điểm M — dấu màu vàng
+            ctx.fillStyle = '#f59e0b';
+            gDot(ctx, M.x, M.y, 5);
+            // 2 dấu tích nhỏ trên AM và MB
+            ctx.strokeStyle = state.color;
+            const tickLen = 8, ang = Math.atan2(B.y - A.y, B.x - A.x);
+            const perp = ang + Math.PI/2;
+            [[A, M], [M, B]].forEach(([P, Q]) => {
+                const cx2 = (P.x+Q.x)/2, cy2 = (P.y+Q.y)/2;
+                ctx.lineWidth = Math.max(1.5, state.lineWidth * 0.7);
+                ctx.beginPath();
+                ctx.moveTo(cx2 + tickLen*Math.cos(perp)/2, cy2 + tickLen*Math.sin(perp)/2);
+                ctx.lineTo(cx2 - tickLen*Math.cos(perp)/2, cy2 - tickLen*Math.sin(perp)/2);
+                ctx.stroke();
+            });
+            ctx.restore();
+            saveState(); state.geoStage = 0; state.geoA = null;
+            showToast('✓ Trung điểm đã xác định');
+        }
+        return;
+    }
+
+    /* Đường tròn qua 3 điểm — 3 clicks */
+    if (state.tool === 'geo-circ3') {
+        if (state.geoStage === 0) {
+            state.geoA = {x, y}; state.geoStage = 1;
+            tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+            tmpCtx.fillStyle = state.color;
+            gDot(tmpCtx, x, y, 4);
+            showToast('⭕ Click điểm thứ 2');
+        } else if (state.geoStage === 1) {
+            state.geoB = {x, y}; state.geoStage = 2;
+            tmpCtx.fillStyle = state.color;
+            gDot(tmpCtx, x, y, 4);
+            showToast('⭕ Click điểm thứ 3 để vẽ đường tròn');
+        } else {
+            const A = state.geoA, B = state.geoB, C = {x, y};
+            const O = circumcenter(A, B, C);
+            tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+            if (!O) { showToast('⚠ Ba điểm thẳng hàng!'); state.geoStage=0; state.geoA=state.geoB=null; return; }
+            const R = Math.hypot(A.x - O.x, A.y - O.y);
+            ctx.save();
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = state.color; ctx.lineWidth = state.lineWidth;
+            ctx.lineCap = 'round'; ctx.setLineDash([]);
+            ctx.beginPath(); ctx.arc(O.x, O.y, R, 0, Math.PI * 2); ctx.stroke();
+            ctx.fillStyle = state.color;
+            gDot(ctx, A.x, A.y, 4);
+            gDot(ctx, B.x, B.y, 4);
+            gDot(ctx, C.x, C.y, 4);
+            // Tâm — dấu nhỏ hơn
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            gDot(ctx, O.x, O.y, 3);
+            ctx.restore();
+            saveState(); state.geoStage = 0; state.geoA = state.geoB = null;
+            showToast('✓ Đường tròn ngoại tiếp đã vẽ');
+        }
+        return;
+    }
+
+    /* Tam giác vuông từ cạnh huyền (Thales) — 3 clicks */
+    if (state.tool === 'geo-thales') {
+        if (state.geoStage === 0) {
+            state.geoA = {x, y}; state.geoStage = 1;
+            tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+            tmpCtx.fillStyle = state.color;
+            gDot(tmpCtx, x, y, 4);
+            showToast('△ Click đầu kia cạnh huyền');
+        } else if (state.geoStage === 1) {
+            state.geoB = {x, y}; state.geoStage = 2;
+            tmpCtx.fillStyle = state.color;
+            gDot(tmpCtx, x, y, 4);
+            showToast('△ Click chọn đỉnh — sẽ tự snap lên đường tròn Thales');
+        } else {
+            const A = state.geoA, B = state.geoB;
+            const O = {x: (A.x+B.x)/2, y: (A.y+B.y)/2};
+            const R = Math.hypot(A.x - O.x, A.y - O.y);
+            const C = snapToCircle(O, R, {x, y});
+            tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+            ctx.save();
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = state.color; ctx.lineWidth = state.lineWidth;
+            ctx.lineCap = 'round'; ctx.setLineDash([]);
+            // Tam giác
+            ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(C.x, C.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = state.lineWidth + 0.5;
+            ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+            ctx.strokeStyle = state.color; ctx.lineWidth = state.lineWidth;
+            drawRightAngleMark(ctx, C, A, B);
+            ctx.fillStyle = state.color;
+            gDot(ctx, A.x, A.y, 4);
+            gDot(ctx, B.x, B.y, 4);
+            gDot(ctx, C.x, C.y, 4);
+            ctx.restore();
+            saveState(); state.geoStage = 0; state.geoA = state.geoB = null;
+            showToast('✓ Tam giác vuông tại đỉnh');
+        }
+        return;
+    }
+
+    /* Đường trung trực — 2 clicks: A → B */
+    if (state.tool === 'geo-perp-bisect') {
+        if (state.geoStage === 0) {
+            state.geoA = {x, y}; state.geoStage = 1;
+            tmpCtx.clearRect(0,0,tmpCanvas.width,tmpCanvas.height);
+            tmpCtx.fillStyle = state.color; gDot(tmpCtx, x, y, 4);
+            showToast('⊥ Click điểm B để vẽ đường trung trực');
+        } else {
+            const A = state.geoA, B = {x, y};
+            const M = {x:(A.x+B.x)/2, y:(A.y+B.y)/2};
+            const dx = B.x-A.x, dy = B.y-A.y, len = Math.hypot(dx,dy);
+            if (len < 5) { state.geoStage=0; state.geoA=null; return; }
+            const px = -dy/len, py = dx/len, ext = len * 0.85;
+            const T1 = {x:M.x+px*ext, y:M.y+py*ext}, T2 = {x:M.x-px*ext, y:M.y-py*ext};
+            tmpCtx.clearRect(0,0,tmpCanvas.width,tmpCanvas.height);
+            ctx.save(); ctx.globalCompositeOperation='source-over';
+            ctx.strokeStyle=state.color; ctx.lineWidth=state.lineWidth; ctx.lineCap='round'; ctx.setLineDash([]);
+            ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(T1.x,T1.y); ctx.lineTo(T2.x,T2.y); ctx.stroke();
+            ctx.fillStyle=state.color; gDot(ctx,A.x,A.y,4); gDot(ctx,B.x,B.y,4);
+            ctx.fillStyle='#f59e0b'; gDot(ctx,M.x,M.y,4);
+            // Dấu vuông góc tại M
+            drawRightAngleMark(ctx, M, A, {x:T1.x,y:T1.y});
+            // 2 dấu tích trên AM và MB
+            const perp2 = Math.atan2(dy,dx) + Math.PI/2;
+            [[A,M],[M,B]].forEach(([P,Q])=>{
+                const mx2=(P.x+Q.x)/2, my2=(P.y+Q.y)/2, tk=7;
+                ctx.lineWidth=Math.max(1.5,state.lineWidth*.7);
+                ctx.beginPath();
+                ctx.moveTo(mx2+tk*Math.cos(perp2)/2,my2+tk*Math.sin(perp2)/2);
+                ctx.lineTo(mx2-tk*Math.cos(perp2)/2,my2-tk*Math.sin(perp2)/2);
+                ctx.stroke();
+            });
+            ctx.restore(); saveState(); state.geoStage=0; state.geoA=null;
+            showToast('✓ Đường trung trực đã vẽ');
+        }
+        return;
+    }
+
+    /* Đường cao tam giác — 3 clicks: đỉnh C → điểm A → điểm B (cạnh đáy) */
+    if (state.tool === 'geo-altitude') {
+        if (state.geoStage === 0) {
+            state.geoA = {x, y}; state.geoStage = 1;
+            tmpCtx.clearRect(0,0,tmpCanvas.width,tmpCanvas.height);
+            tmpCtx.fillStyle = state.color; gDot(tmpCtx,x,y,4);
+            showToast('↓ Click điểm A trên cạnh đáy');
+        } else if (state.geoStage === 1) {
+            state.geoB = {x, y}; state.geoStage = 2;
+            tmpCtx.fillStyle = state.color; gDot(tmpCtx,x,y,4);
+            showToast('↓ Click điểm B (đầu kia cạnh đáy) để vẽ đường cao');
+        } else {
+            const C = state.geoA, A = state.geoB, B = {x, y};
+            const dx=B.x-A.x, dy=B.y-A.y, len2=dx*dx+dy*dy;
+            if (len2 < 1) { state.geoStage=0; state.geoA=state.geoB=null; return; }
+            const t=((C.x-A.x)*dx+(C.y-A.y)*dy)/len2;
+            const H = {x:A.x+t*dx, y:A.y+t*dy};
+            tmpCtx.clearRect(0,0,tmpCanvas.width,tmpCanvas.height);
+            ctx.save(); ctx.globalCompositeOperation='source-over';
+            ctx.strokeStyle=state.color; ctx.lineWidth=state.lineWidth; ctx.lineCap='round'; ctx.setLineDash([]);
+            // Cạnh đáy AB (nét liền)
+            ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke();
+            // Đường cao CH (nét liền)
+            ctx.beginPath(); ctx.moveTo(C.x,C.y); ctx.lineTo(H.x,H.y); ctx.stroke();
+            // Dấu vuông tại H
+            drawRightAngleMark(ctx, H, C, B);
+            // Chấm điểm
+            ctx.fillStyle=state.color;
+            gDot(ctx,C.x,C.y,4); gDot(ctx,A.x,A.y,4); gDot(ctx,B.x,B.y,4);
+            ctx.fillStyle='#f59e0b'; gDot(ctx,H.x,H.y,4);
+            ctx.restore(); saveState(); state.geoStage=0; state.geoA=state.geoB=null;
+            showToast('✓ Đường cao đã vẽ');
+        }
+        return;
+    }
+
+    /* Đường phân giác — 3 clicks: đỉnh V → điểm A (cạnh 1) → điểm B (cạnh 2) */
+    if (state.tool === 'geo-bisector') {
+        if (state.geoStage === 0) {
+            state.geoA = {x, y}; state.geoStage = 1;
+            tmpCtx.clearRect(0,0,tmpCanvas.width,tmpCanvas.height);
+            tmpCtx.fillStyle = state.color; gDot(tmpCtx,x,y,4);
+            showToast('∠ Click điểm trên cạnh thứ nhất');
+        } else if (state.geoStage === 1) {
+            state.geoB = {x, y}; state.geoStage = 2;
+            tmpCtx.fillStyle = state.color; gDot(tmpCtx,x,y,4);
+            showToast('∠ Click điểm trên cạnh thứ hai để vẽ phân giác');
+        } else {
+            const V = state.geoA, A = state.geoB, B = {x, y};
+            const dA = Math.hypot(V.x-A.x,V.y-A.y), dB = Math.hypot(V.x-B.x,V.y-B.y);
+            if (dA<3||dB<3) { state.geoStage=0; state.geoA=state.geoB=null; return; }
+            const uAx=(A.x-V.x)/dA, uAy=(A.y-V.y)/dA;
+            const uBx=(B.x-V.x)/dB, uBy=(B.y-V.y)/dB;
+            const bx=uAx+uBx, by=uAy+uBy, bLen=Math.hypot(bx,by);
+            const ext = Math.min(dA,dB)*1.4;
+            tmpCtx.clearRect(0,0,tmpCanvas.width,tmpCanvas.height);
+            ctx.save(); ctx.globalCompositeOperation='source-over';
+            ctx.strokeStyle=state.color; ctx.lineWidth=state.lineWidth; ctx.lineCap='round'; ctx.setLineDash([]);
+            // 2 cạnh góc
+            ctx.beginPath(); ctx.moveTo(V.x,V.y); ctx.lineTo(A.x,A.y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(V.x,V.y); ctx.lineTo(B.x,B.y); ctx.stroke();
+            // Phân giác
+            if (bLen > 0.01) {
+                const end = {x:V.x+(bx/bLen)*ext, y:V.y+(by/bLen)*ext};
+                ctx.setLineDash([7, 4]);
+                ctx.beginPath(); ctx.moveTo(V.x,V.y); ctx.lineTo(end.x,end.y); ctx.stroke();
+                ctx.setLineDash([]);
+                // Mũi tên nhỏ
+                const ang = Math.atan2(end.y-V.y, end.x-V.x);
+                const aw=7, ah=4;
+                ctx.fillStyle=state.color;
+                ctx.beginPath();
+                ctx.moveTo(end.x,end.y);
+                ctx.lineTo(end.x-aw*Math.cos(ang-0.35),end.y-aw*Math.sin(ang-0.35));
+                ctx.lineTo(end.x-aw*Math.cos(ang+0.35),end.y-aw*Math.sin(ang+0.35));
+                ctx.closePath(); ctx.fill();
+            }
+            // Cung nhỏ hiển thị góc được phân chia
+            const r = Math.min(dA,dB)*0.28;
+            const a1 = Math.atan2(A.y-V.y,A.x-V.x), a2 = Math.atan2(B.y-V.y,B.x-V.x);
+            ctx.strokeStyle=state.color; ctx.lineWidth=Math.max(1.2,state.lineWidth*.6);
+            ctx.beginPath(); ctx.arc(V.x,V.y,r,Math.min(a1,a2),Math.max(a1,a2)); ctx.stroke();
+            ctx.fillStyle=state.color; gDot(ctx,V.x,V.y,4); gDot(ctx,A.x,A.y,4); gDot(ctx,B.x,B.y,4);
+            ctx.restore(); saveState(); state.geoStage=0; state.geoA=state.geoB=null;
+            showToast('✓ Đường phân giác đã vẽ');
+        }
+        return;
+    }
+
     /* Thước đo góc thông minh – 3-click: đỉnh → cạnh 1 → cạnh 2 */
     if (state.tool === 'protractor') {
         if (state.protractorStage === 0) {
@@ -3938,6 +4296,143 @@ function handleMove(e) {
             tmpCtx.arc(V.x,V.y,r,a1,a2);
         }
         tmpCtx.stroke(); tmpCtx.setLineDash([]); tmpCtx.globalAlpha=1;
+        return;
+    }
+
+    /* Geo tools live preview */
+    if (['geo-midpoint','geo-circ3','geo-thales','geo-perp-bisect','geo-altitude','geo-bisector'].includes(state.tool) && state.geoStage > 0) {
+        const {x, y} = getXY(e);
+        const A = state.geoA, B = state.geoB;
+        const tc = tmpCtx;
+        tc.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+        tc.save();
+        tc.strokeStyle = state.color; tc.lineWidth = Math.max(1, state.lineWidth * 0.75);
+        tc.fillStyle = state.color;
+        tc.setLineDash([6, 4]); tc.globalAlpha = 0.6; tc.lineCap = 'round';
+
+        if (state.tool === 'geo-midpoint') {
+            if (state.geoStage === 1) {
+                // Đoạn thẳng nháp + điểm A đã chấm + midpoint preview
+                tc.beginPath(); tc.moveTo(A.x, A.y); tc.lineTo(x, y); tc.stroke();
+                tc.setLineDash([]); tc.globalAlpha = 1;
+                tc.beginPath(); tc.arc(A.x, A.y, 4, 0, Math.PI*2); tc.fill();
+                // Trung điểm preview
+                const mx = (A.x+x)/2, my = (A.y+y)/2;
+                tc.fillStyle = '#f59e0b'; tc.globalAlpha = 0.8;
+                tc.beginPath(); tc.arc(mx, my, 5, 0, Math.PI*2); tc.fill();
+            }
+        } else if (state.tool === 'geo-circ3') {
+            if (state.geoStage === 1) {
+                tc.beginPath(); tc.moveTo(A.x, A.y); tc.lineTo(x, y); tc.stroke();
+                tc.setLineDash([]); tc.beginPath(); tc.arc(A.x, A.y, 4, 0, Math.PI*2); tc.fill();
+            } else if (state.geoStage === 2) {
+                // Đường tròn ngoại tiếp nháp qua A, B, cursor
+                const O = (function() {
+                    const C2 = {x, y};
+                    const D = 2*(A.x*(B.y-C2.y)+B.x*(C2.y-A.y)+C2.x*(A.y-B.y));
+                    if (Math.abs(D) < 1e-9) return null;
+                    const ux = ((A.x*A.x+A.y*A.y)*(B.y-C2.y)+(B.x*B.x+B.y*B.y)*(C2.y-A.y)+(C2.x*C2.x+C2.y*C2.y)*(A.y-B.y))/D;
+                    const uy = ((A.x*A.x+A.y*A.y)*(C2.x-B.x)+(B.x*B.x+B.y*B.y)*(A.x-C2.x)+(C2.x*C2.x+C2.y*C2.y)*(B.x-A.x))/D;
+                    return {x: ux, y: uy};
+                })();
+                tc.beginPath(); tc.moveTo(A.x, A.y); tc.lineTo(x, y); tc.stroke();
+                tc.beginPath(); tc.moveTo(B.x, B.y); tc.lineTo(x, y); tc.stroke();
+                if (O) { const R = Math.hypot(A.x-O.x, A.y-O.y); tc.beginPath(); tc.arc(O.x, O.y, R, 0, Math.PI*2); tc.stroke(); }
+                tc.setLineDash([]); tc.globalAlpha = 1;
+                tc.beginPath(); tc.arc(A.x, A.y, 4, 0, Math.PI*2); tc.fill();
+                tc.beginPath(); tc.arc(B.x, B.y, 4, 0, Math.PI*2); tc.fill();
+                tc.beginPath(); tc.arc(x, y, 4, 0, Math.PI*2); tc.fill();
+            }
+        } else if (state.tool === 'geo-thales') {
+            if (state.geoStage === 1) {
+                tc.beginPath(); tc.moveTo(A.x, A.y); tc.lineTo(x, y); tc.stroke();
+                tc.setLineDash([]); tc.beginPath(); tc.arc(A.x, A.y, 4, 0, Math.PI*2); tc.fill();
+                // Đường tròn Thales nháp
+                const O2 = {x:(A.x+x)/2, y:(A.y+y)/2}, R2 = Math.hypot(A.x-x, A.y-y)/2;
+                tc.setLineDash([4, 4]); tc.globalAlpha = 0.28;
+                tc.beginPath(); tc.arc(O2.x, O2.y, R2, 0, Math.PI*2); tc.stroke();
+            } else if (state.geoStage === 2) {
+                const O2 = {x:(A.x+B.x)/2, y:(A.y+B.y)/2}, R2 = Math.hypot(A.x-B.x, A.y-B.y)/2;
+                // Đường tròn
+                tc.globalAlpha = 0.3;
+                tc.beginPath(); tc.arc(O2.x, O2.y, R2, 0, Math.PI*2); tc.stroke();
+                // Snap điểm C lên đường tròn
+                const d = Math.hypot(x-O2.x, y-O2.y);
+                const Cs = d<1 ? {x:O2.x+R2,y:O2.y} : {x:O2.x+R2*(x-O2.x)/d, y:O2.y+R2*(y-O2.y)/d};
+                tc.setLineDash([]); tc.globalAlpha = 0.65;
+                tc.lineWidth = state.lineWidth;
+                tc.beginPath(); tc.moveTo(A.x, A.y); tc.lineTo(Cs.x, Cs.y); tc.lineTo(B.x, B.y); tc.stroke();
+                tc.globalAlpha = 1;
+                tc.beginPath(); tc.arc(A.x, A.y, 4, 0, Math.PI*2); tc.fill();
+                tc.beginPath(); tc.arc(B.x, B.y, 4, 0, Math.PI*2); tc.fill();
+                tc.fillStyle = '#f59e0b';
+                tc.beginPath(); tc.arc(Cs.x, Cs.y, 5, 0, Math.PI*2); tc.fill();
+            }
+        } else if (state.tool === 'geo-perp-bisect') {
+            if (state.geoStage === 1) {
+                // AB nháp + trung trực preview
+                tc.beginPath(); tc.moveTo(A.x, A.y); tc.lineTo(x, y); tc.stroke();
+                const Mx=(A.x+x)/2, My=(A.y+y)/2;
+                const ddx=x-A.x, ddy=y-A.y, ll=Math.hypot(ddx,ddy)||1;
+                const ppx=-ddy/ll, ppy=ddx/ll, ext2=ll*0.7;
+                tc.setLineDash([5,4]);
+                tc.beginPath(); tc.moveTo(Mx+ppx*ext2,My+ppy*ext2); tc.lineTo(Mx-ppx*ext2,My-ppy*ext2); tc.stroke();
+                tc.setLineDash([]); tc.globalAlpha=1;
+                tc.beginPath(); tc.arc(A.x,A.y,4,0,Math.PI*2); tc.fill();
+                tc.fillStyle='#f59e0b'; tc.globalAlpha=0.85;
+                tc.beginPath(); tc.arc(Mx,My,4,0,Math.PI*2); tc.fill();
+            }
+        } else if (state.tool === 'geo-altitude') {
+            if (state.geoStage === 1) {
+                tc.beginPath(); tc.moveTo(A.x,A.y); tc.lineTo(x,y); tc.stroke();
+                tc.setLineDash([]); tc.globalAlpha=1;
+                tc.beginPath(); tc.arc(A.x,A.y,4,0,Math.PI*2); tc.fill();
+            } else if (state.geoStage === 2) {
+                // Cạnh đáy A→cursor + đường cao nháp từ C (=geoA)
+                const C2=A; // geoA = đỉnh C
+                tc.beginPath(); tc.moveTo(B.x,B.y); tc.lineTo(x,y); tc.stroke(); // base line nháp
+                const ddx=x-B.x, ddy=y-B.y, ll2=ddx*ddx+ddy*ddy;
+                if (ll2 > 1) {
+                    const tt=((C2.x-B.x)*ddx+(C2.y-B.y)*ddy)/ll2;
+                    const Hx=B.x+tt*ddx, Hy=B.y+tt*ddy;
+                    tc.setLineDash([5,4]);
+                    tc.beginPath(); tc.moveTo(C2.x,C2.y); tc.lineTo(Hx,Hy); tc.stroke();
+                    tc.setLineDash([]); tc.globalAlpha=1;
+                    tc.fillStyle='#f59e0b'; tc.beginPath(); tc.arc(Hx,Hy,4,0,Math.PI*2); tc.fill();
+                }
+                tc.setLineDash([]); tc.globalAlpha=1; tc.fillStyle=state.color;
+                tc.beginPath(); tc.arc(C2.x,C2.y,4,0,Math.PI*2); tc.fill();
+                tc.beginPath(); tc.arc(B.x,B.y,4,0,Math.PI*2); tc.fill();
+            }
+        } else if (state.tool === 'geo-bisector') {
+            if (state.geoStage === 1) {
+                tc.beginPath(); tc.moveTo(A.x,A.y); tc.lineTo(x,y); tc.stroke();
+                tc.setLineDash([]); tc.globalAlpha=1;
+                tc.beginPath(); tc.arc(A.x,A.y,4,0,Math.PI*2); tc.fill();
+            } else if (state.geoStage === 2) {
+                const V2=A, P1=B; // V=geoA, first side point=geoB
+                tc.beginPath(); tc.moveTo(V2.x,V2.y); tc.lineTo(P1.x,P1.y); tc.stroke();
+                tc.beginPath(); tc.moveTo(V2.x,V2.y); tc.lineTo(x,y); tc.stroke();
+                // Phân giác nháp
+                const dA2=Math.hypot(V2.x-P1.x,V2.y-P1.y), dB2=Math.hypot(V2.x-x,V2.y-y);
+                if (dA2>2&&dB2>2) {
+                    const uAx2=(P1.x-V2.x)/dA2, uAy2=(P1.y-V2.y)/dA2;
+                    const uBx2=(x-V2.x)/dB2, uBy2=(y-V2.y)/dB2;
+                    const bbx=uAx2+uBx2, bby=uAy2+uBy2, bl=Math.hypot(bbx,bby);
+                    if (bl>0.01) {
+                        const ext3=Math.min(dA2,dB2)*1.3;
+                        tc.setLineDash([6,4]); tc.globalAlpha=0.75;
+                        tc.beginPath(); tc.moveTo(V2.x,V2.y); tc.lineTo(V2.x+bbx/bl*ext3,V2.y+bby/bl*ext3); tc.stroke();
+                    }
+                }
+                tc.setLineDash([]); tc.globalAlpha=1;
+                tc.beginPath(); tc.arc(V2.x,V2.y,4,0,Math.PI*2); tc.fill();
+                tc.beginPath(); tc.arc(P1.x,P1.y,4,0,Math.PI*2); tc.fill();
+                tc.beginPath(); tc.arc(x,y,4,0,Math.PI*2); tc.fill();
+            }
+        }
+        tc.setLineDash([]); tc.globalAlpha = 1;
+        tc.restore();
         return;
     }
 
@@ -4618,7 +5113,7 @@ canvas.addEventListener('pointerleave', e => {
 window.addEventListener('keydown', e => {
     if ((e.ctrlKey||e.metaKey) && e.key==='z') { e.preventDefault(); undo(); }
     if ((e.ctrlKey||e.metaKey) && e.key==='y') { e.preventDefault(); redo(); }
-    if (e.key==='Escape') { commitCurve(); commitArc(); abortPolyFill(); abortProtractor(); closeAllPanels(); }
+    if (e.key==='Escape') { commitCurve(); commitArc(); abortPolyFill(); abortProtractor(); commitGeo(); closeAllPanels(); }
 
     // F / f = Fullscreen toggle — chỉ khi không đang gõ văn bản
     if (!e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 'f') {
@@ -4641,14 +5136,14 @@ window.addEventListener('keydown', e => {
     if (!isTypingNow && !e.ctrlKey && !e.metaKey) {
         const km = {p:'pen', e:'eraser', t:'text', h:'highlight', m:'model-select', g:'poly-fill'};
         if (km[e.key]) {
-            commitCurve(); commitArc(); abortPolyFill(); abortProtractor();
+            commitCurve(); commitArc(); abortPolyFill(); abortProtractor(); commitGeo();
             state.tool = (state.tool === km[e.key] && e.key==='m') ? 'pen' : km[e.key];
             closeAllPanels(); updateUI();
         }
-        // 1 = Văn bản, 2 = Tiêu đề mục, 3 = Tiêu đề bài học
-        if (e.key === '1' || e.key === '2' || e.key === '3') {
-            const modeMap = { '1': 'body', '2': 'heading', '3': 'title' };
-            commitCurve(); commitArc(); abortPolyFill(); abortProtractor();
+        // 1 = Văn bản, 2 = Tiêu đề mục, 3 = Tiêu đề bài học, 4 = Chữ đại
+        if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
+            const modeMap = { '1': 'body', '2': 'heading', '3': 'title', '4': 'huge' };
+            commitCurve(); commitArc(); abortPolyFill(); abortProtractor(); commitGeo();
             state.tool = 'text';
             state.textMode = modeMap[e.key];
             closeAllPanels(); updateUI();
@@ -5085,14 +5580,42 @@ window.addEventListener('keydown', e => {
         fetchBtn.disabled = false;
     }
 
+    /* ── loadFromManualText: nhập tay từng dòng ── */
+    function loadFromManualText(text) {
+        const rows = text.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+        if (!rows.length) {
+            sheetMsg.style.color = '#f87171';
+            sheetMsg.textContent = '⚠ Hãy nhập ít nhất 1 câu hỏi.';
+            return false;
+        }
+        questions = rows;
+        qIndex  = 0;
+        qStates = [];
+        _mathCache.clear();
+        sheetMsg.style.color = '#34d399';
+        sheetMsg.textContent = `✓ Đã nạp ${questions.length} câu hỏi!`;
+        setTimeout(() => {
+            sheetPanel.classList.remove('open');
+            sideBtn.classList.add('ql-active');
+            qBar.classList.add('open');
+            qStatus.textContent = `${questions.length} câu hỏi`;
+            navigateTo(0, true);
+        }, 300);
+        return true;
+    }
+    document.getElementById('q-manual-load-btn').addEventListener('click', () => {
+        loadFromManualText(document.getElementById('q-manual-input').value);
+    });
+
     /* ── Tab switching ── */
     document.querySelectorAll('.q-tab').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.q-tab').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const tab = btn.dataset.tab;
-            document.getElementById('q-tab-url').style.display = tab === 'url' ? '' : 'none';
-            document.getElementById('q-tab-csv').style.display = tab === 'csv' ? '' : 'none';
+            document.getElementById('q-tab-manual').style.display = tab === 'manual' ? '' : 'none';
+            document.getElementById('q-tab-url').style.display    = tab === 'url'    ? '' : 'none';
+            document.getElementById('q-tab-csv').style.display    = tab === 'csv'    ? '' : 'none';
             sheetMsg.textContent = '';
         });
     });
